@@ -26,19 +26,31 @@ int main()
 	t_move move;						/* a move */
 	int player;
 	int sizeX,sizeY;
+	int i;
 
 	/* connection to the server */
-	connectToServer( "pc4023.polytech.upmc.fr", 1234, "prog_template");
+	connectToServer( "pc4022.polytech.upmc.fr", 1234, "prog1_template");
 	
 	
 	/* wait for a game, and retrieve informations about it */
 	waitForLabyrinth( "DO_NOTHING timeout=10", labName, &sizeX, &sizeY);
 	labData = (char*) malloc( sizeX * sizeY );
-	player = getLabyrinth( labData);
+	player = getLabyrinth(labData);
+	printf("sizeX=%d et sizeY=%d\n",sizeX,sizeY); //
+	
+	
+	for(i=0;i<(sizeX*sizeY);i++) 
+	   {
+	      if(i%sizeX==0 && i!=0) printf("\n");
+	      printf("%d|",labData[i]);
+	      	      
+	   }
+	      printf("\n");//
 	
 	
 	
-	/* display the labyrinth */
+	
+        /* display the labyrinth */
 	printLabyrinth();
 	
 	if (player==1)	/* The opponent plays */
@@ -54,7 +66,10 @@ int main()
 	  }
 	
 	if ((player ==1 && ret == MOVE_WIN) || (player==0 && ret == MOVE_LOSE))
-	  printf("I lose the game\n");
+	   {
+	      printf("I lose the game\n");
+	      //break;//
+	   }
 	
 	/* we do not forget to free the allocated array */
 	free(labData);
