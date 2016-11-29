@@ -29,46 +29,51 @@ int main()
 	int i;
 
 	/* connection to the server */
-	connectToServer( "pc4022.polytech.upmc.fr", 1234, "prog1_template");
+	connectToServer( "pc4022.polytech.upmc.fr", 1234, "Gengo_Lance");
 	
 	
 	/* wait for a game, and retrieve informations about it */
 	waitForLabyrinth( "DO_NOTHING timeout=10", labName, &sizeX, &sizeY);
 	labData = (char*) malloc( sizeX * sizeY );
 	player = getLabyrinth(labData);
-	printf("sizeX=%d et sizeY=%d\n",sizeX,sizeY); //
+	printf("sizeX=%d et sizeY=%d\n",sizeX,sizeY); 
 	
 	
 	for(i=0;i<(sizeX*sizeY);i++) 
 	   {
 	      if(i%sizeX==0 && i!=0) printf("\n");
-	      printf("%d|",labData[i]);
-	      	      
+	      printf("%d|",labData[i]);	      	      
 	   }
-	      printf("\n");//
+	printf("\n");
+	printf("%d,G%d,D%d,H%d,B%d\n",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
+	int mv; //mouvement choisi
+           	
+	while(1)//Boucle infnie
+	   {		     
+	      /* display the labyrinth */
+	      printLabyrinth();
 	
+	      if (player==1)	/* The opponent plays */
+	      {
+		 ret = getMove( &move);
+		 player=0;
+		 //playMove( &lab, move);
+	      }
+	      else
+	      {
+		 printf("Mouvement souhaité Rien=%d;Gauche=%d;Droite=%d;Haut=%d;Bas=%d\nMouve=",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
+		 scanf("%d",&mv);
+		 move.type = mv; //DO_NOTHING;
+		 move.value = 0;
+		 ret = sendMove(move);
+		 player=1;
+	      }
 	
-	
-	
-        /* display the labyrinth */
-	printLabyrinth();
-	
-	if (player==1)	/* The opponent plays */
-	  {
-	    ret = getMove( &move);
-	    //playMove( &lab, move);
-	  }
-	else
-	  {
-	    move.type = DO_NOTHING;
-	    move.value = 0;
-	    ret = sendMove(move);
-	  }
-	
-	if ((player ==1 && ret == MOVE_WIN) || (player==0 && ret == MOVE_LOSE))
-	   {
-	      printf("I lose the game\n");
-	      //break;//
+	      if ((player ==1 && ret == MOVE_WIN) || (player==0 && ret == MOVE_LOSE))
+	      {
+		 printf("I lose the game\n");
+		 break;//Sors de la boucle si on a perdu
+	      }
 	   }
 	
 	/* we do not forget to free the allocated array */
