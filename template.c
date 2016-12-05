@@ -29,7 +29,7 @@ int main()
 	int i;
 
 	/* connection to the server */
-	connectToServer( "pc4022.polytech.upmc.fr", 1234, "Gengo_Lance");
+	connectToServer( "pc4023.polytech.upmc.fr", 1234, "Gengo_Lance");
 	
 	
 	/* wait for a game, and retrieve informations about it */
@@ -47,34 +47,34 @@ int main()
 	printf("\n");
 	printf("%d,G%d,D%d,H%d,B%d\n",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
 	int mv; //mouvement choisi
-           	
-	while(1)//Boucle infnie
-	   {		     
-	      /* display the labyrinth */
-	      printLabyrinth();
+        printLabyrinth();
+	do
+	{
+	   /* display the labyrinth */	      
 	
-	      if (player==1)	/* The opponent plays */
-	      {
-		 ret = getMove( &move);
-		 player=0;
-		 //playMove( &lab, move);
-	      }
-	      else
-	      {
-		 printf("Mouvement souhaité Rien=%d;Gauche=%d;Droite=%d;Haut=%d;Bas=%d\nMouve=",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
-		 scanf("%d",&mv);
-		 move.type = mv; //DO_NOTHING;
-		 move.value = 0;
-		 ret = sendMove(move);
-		 player=1;
-	      }
-	
-	      if ((player ==1 && ret == MOVE_WIN) || (player==0 && ret == MOVE_LOSE))
-	      {
-		 printf("I lose the game\n");
-		 break;//Sors de la boucle si on a perdu
-	      }
+	   if (player==1)	/* The opponent plays */
+	   {
+	      ret = getMove( &move);
+	      player=0;
+	      //playMove( &lab, move);
 	   }
+	   else
+	   {
+		 
+	      printf("Mouvement souhaité Rien=%d\nGauche=%d\nDroite=%d\nHaut=%d\nBas=%d\nChoix: ",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
+	      scanf("%d",&mv);
+	      move.type = mv; //DO_NOTHING;
+	      move.value = 0;
+	      ret = sendMove(move);
+	      player=1;
+	   }
+	   printLabyrinth();	
+	      
+	}
+	while((player ==1 && ret != MOVE_WIN) || (player==0 && ret != MOVE_LOSE));
+	           
+	if((player ==1 && ret != MOVE_WIN) || (player==0 && ret != MOVE_LOSE)) printf("Perdu !");
+	else printf("Gagné !");
 	
 	/* we do not forget to free the allocated array */
 	free(labData);
