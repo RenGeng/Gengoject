@@ -3,7 +3,7 @@ LIBDIR = /home/sasl/encad/brajard/projet/CGS_lib
 
 # options de compilation
 CC = gcc
-CCFLAGS = -Wall -I $(LIBDIR)/include
+CCFLAGS = -Wall -I $(LIBDIR)/include -g
 LIBS = -L $(LIBDIR)/lib
 LDFLAGS = -lm -lcgs
 
