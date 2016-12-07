@@ -60,13 +60,13 @@ char** init_lab(char *labData,t_joueur p1,t_joueur p2,int sizeX, int sizeY)
 	    if((i==p1.y && j==p1.x)) tabData[i][j]='>';
 	    else if((i==p2.y && j==p2.x)) tabData[i][j]='@';
 	    else if((i==sizeY/2 && j==sizeX/2)) tabData[i][j]='T';
-	    putchar(tabData[i][j]);
-	    printf("|");
+	    // putchar(tabData[i][j]);
+	    //printf("|");
 	 }
 	 else
 	 {	    
 	    tabData[i][j] = labData[i*sizeX+j];
-	    printf("%d|",tabData[i][j]);
+	    //printf("%d|",tabData[i][j]);
 	 }
       }
       printf("\n");
@@ -76,6 +76,8 @@ char** init_lab(char *labData,t_joueur p1,t_joueur p2,int sizeX, int sizeY)
 
 void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,int sizeX,int sizeY)
 {
+   labData_2D[p1.y][p1.x] = '>';
+   labData_2D[p2.y][p2.x] = '@';
    int i,j;   
    for(i=0;i<sizeY;i++)
    {
@@ -96,6 +98,8 @@ void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,int sizeX,int sizeY)
       }
       printf("\n");
    }
+   labData_2D[p1.y][p1.x] = 0;
+   labData_2D[p2.y][p2.x] = 0;
 }
 
 char *maj_lab(char *labData,t_move move,int sizeX,int sizeY)
@@ -154,7 +158,7 @@ int main()
 	
 	
    /* wait for a game, and retrieve informations about it */
-   waitForLabyrinth( "PLAY_RANDOM timeout=60", labName, &sizeX, &sizeY);
+   waitForLabyrinth( "DO_NOTHING timeout=6000", labName, &sizeX, &sizeY);
    labData = (char*) malloc( sizeX * sizeY );
    player = getLabyrinth(labData);
    printf("sizeX=%d et sizeY=%d\n",sizeX,sizeY); 
@@ -164,12 +168,12 @@ int main()
    printf("\n");
    //printf("L%d,R%d,U%d,D%d\n",ROTATE_LINE_LEFT,ROTATE_LINE_RIGHT,ROTATE_COLUMN_UP,ROTATE_COLUMN_DOWN);
    int mv; //mouvement choisi
-   int pos_J0,pos_J1,pos_tresor; //position des joueurs en 1D
-   pos_tresor=sizeX*(sizeY/2)+sizeX/2;
+   //int pos_J0,pos_J1,pos_tresor; //position des joueurs en 1D
+   //pos_tresor=sizeX*(sizeY/2)+sizeX/2;
    if(player==0) 
    {
-      pos_J0=sizeX*(sizeY/2); 
-      pos_J1=sizeX+pos_J0-1;
+      //pos_J0=sizeX*(sizeY/2); 
+      //pos_J1=sizeX+pos_J0-1;
 
       p1.x = 0;			/* On est à gauche */
       p1.y = sizeY/2;
@@ -181,8 +185,8 @@ int main()
    }
    else
    {
-      pos_J1=sizeX*(sizeY/2); 
-      pos_J0=sizeX+pos_J1-1;
+      //pos_J1=sizeX*(sizeY/2); 
+      //pos_J0=sizeX+pos_J1-1;
 
       p2.x = 0;			/* L'adversaire est à gauche */
       p2.y = sizeY/2;
@@ -196,39 +200,41 @@ int main()
    //labData[pos_tresor]='T';
    labData_2D=init_lab(labData,p1,p2,sizeX,sizeY);
    printf("\n");
-   affichage_2D(labData_2D,p1,p2,sizeX,sizeY);
-   //affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
-   //printLabyrinth();
-   
-   /*do
+     //affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
+
+
+   do
    {
-      if(player==0)
-      {
-	 system("clear");
-	 printLabyrinth();
-	 affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
-	 printf("\n");
-	 //affichage_2D(labData_2D,p1,p2,sizeX,sizeY);
-	 printf("sizeX=%d sizeY=%d\np1x:%d p1y:%d\np2x:%d p2y:%d\n",sizeX,sizeY,p1.x,p1.y,p2.x,p2.y);
-      }
-      /* display the labyrinth */	      
-	
-   // if (player==1)	/* The opponent plays */
-	 /* {
+      /* /\* display the labyrinth *\/ */
+      /* printLabyrinth(); */
+      /* affichage_2D(labData_2D,p1,p2,sizeX,sizeY); */
+      /* if(player==0) /\* The opponent plays *\/ */
+      /* { */
+      /* 	 system("clear"); */
+      /* 	 printLabyrinth(); */
+      /* 	 // affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY); */
+      /* 	 printf("\n"); */
+      /* 	 affichage_2D(labData_2D,p1,p2,sizeX,sizeY); */
+      /* 	 printf("sizeX=%d sizeY=%d\np1x:%d p1y:%d\np2x:%d p2y:%d\n",sizeX,sizeY,p1.x,p1.y,p2.x,p2.y); */
+      /* } */
+      system("clear");
+      printLabyrinth();
+      affichage_2D(labData_2D,p1,p2,sizeX,sizeY);
+      if (player==1) 
+	  {
 	 ret = getMove( &move);
-	 if(move.type<=3) labData=maj_lab(labData,move,sizeX,sizeY);
 	 player=0;
 	 
 	 //playMove( &lab, move);
-      }
+	  }
       else
-      {	      
+      {	 
+	 player=1;
 	 printf("Mouvement souhaité Rien=%d\nGauche=%d\nDroite=%d\nHaut=%d\nBas=%d\nChoix: ",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
 	 //scanf("%d",&mv);
       refaire:
 	 mv=rand()%8;
 	 printf("mv=%d\n",mv);
-	 player=1;
 	 switch(mv)
 	 {
 	    case 0:
@@ -243,50 +249,60 @@ int main()
 	    case 3:
 	       goto refaire;
 	       break;
-	    case 4:
-	       if(pos_J0<sizeX)
+	    case 4: 		/* Déplacement en haut */
+	        // if(pos_J0<sizeX)
+	       if(p1.y==0)
 	       {
-		  if((int)labData[sizeX*sizeY-sizeX+pos_J0]!=1 && sizeX*sizeY-sizeX+pos_J0!=pos_J1) pos_J0=sizeX*sizeY-sizeX+pos_J0;
+		  //if((int)labData[sizeX*sizeY-sizeX+pos_J0]!=1 && sizeX*sizeY-sizeX+pos_J0!=pos_J1) pos_J0=sizeX*sizeY-sizeX+pos_J0;
+		  if((int)labData_2D[sizeY-1][p1.x]!=1 && labData_2D[sizeY-1][p1.x]!='@') p1.y=sizeY-1;
 		  else goto refaire;
 	       }
 	       else
 	       {
-		  if((int)labData[pos_J0-sizeX]!=1 && pos_J0-sizeX!=pos_J1) pos_J0=pos_J0-sizeX;
+		  //if((int)labData[pos_J0-sizeX]!=1 && pos_J0-sizeX!=pos_J1) pos_J0=pos_J0-sizeX;
+		  if((int)labData_2D[p1.y-1][p1.x]!=1 && labData_2D[p1.y-1][p1.x]!='@') p1.y = p1.y-1; 
 		  else goto refaire;
 	       }	       break;
-	    case 5: 
-	       if(pos_J0>=(sizeX*sizeY-sizeX)) 
+	    case 5: 		/* Déplacement en bas */
+	        // if(pos_J0>=(sizeX*sizeY-sizeX)) 
+	       if(p1.y == sizeY-1)
 	       {
-		  if((int)labData[pos_J0%sizeX]!=1 && pos_J0%sizeX!=pos_J1) pos_J0=pos_J0%sizeX;
+		  // if((int)labData[pos_J0%sizeX]!=1 && pos_J0%sizeX!=pos_J1) pos_J0=pos_J0%sizeX;
+		  if((int)labData_2D[0][p1.x]!=1 && labData_2D[0][p1.x]!='@') p1.y = 0;
 		  else goto refaire;
 	       } 		       
 	       else 
 	       {
-		  if((int)labData[pos_J0+sizeX]!=1 && pos_J0+sizeX!=pos_J1) pos_J0=pos_J0+sizeX;
+		  //if((int)labData[pos_J0+sizeX]!=1 && pos_J0+sizeX!=pos_J1) pos_J0=pos_J0+sizeX;
+		  if((int)labData_2D[p1.y+1][p1.x]!=1 && labData_2D[p1.y+1][p1.x]!='@') p1.y = p1.y+1;
 		  else goto refaire;
 	       }
 	       break;
-	    case 6:
-	       if(pos_J0%sizeX==0)
+	    case 6: 		/* Déplacement à gauche */
+	       if(p1.x==0)
 	       {
-		  if((int)labData[pos_J0+sizeX-1]!=1 && pos_J0+sizeX-1!=pos_J1) pos_J0=pos_J0+sizeX-1;
+		  //if((int)labData[pos_J0+sizeX-1]!=1 && pos_J0+sizeX-1!=pos_J1) pos_J0=pos_J0+sizeX-1;
+		  if((int)labData_2D[p1.y][sizeX-1]!=1 && labData_2D[p1.y][sizeX-1]!='@') p1.x = sizeX-1;
 		  else goto refaire;
 	       }
 	       else 
 	       {
-		  if((int)labData[pos_J0-1]!=1 && pos_J0-1!=pos_J1) pos_J0=pos_J0-1;
+		  //if((int)labData[pos_J0-1]!=1 && pos_J0-1!=pos_J1) pos_J0=pos_J0-1;
+		  if((int)labData_2D[p1.y][p1.x-1]!=1 && labData_2D[p1.y][p1.x-1]!='@') p1.x = p1.x-1;
 		  else goto refaire;
 	       }			  
 	       break;
-	    case 7:
-	       if((pos_J0+1)%sizeX==0) 
+	    case 7: 		/* Déplacement à droite */
+	       if(p1.x == sizeX-1) 
 	       {
-		  if((int)labData[pos_J0-sizeX+1]!=1 && pos_J0-sizeX+1!=pos_J1) pos_J0=pos_J0-sizeX+1;
+		  //if((int)labData[pos_J0-sizeX+1]!=1 && pos_J0-sizeX+1!=pos_J1) pos_J0=pos_J0-sizeX+1;
+		  if((int)labData_2D[p1.y][0]!=1 && labData_2D[p1.y][0]!='@') p1.x=0;
 		  else goto refaire;
 	       }
 	       else
 	       {
-		  if((int)labData[pos_J0+1]!=1 && pos_J0+1!=pos_J1) pos_J0=pos_J0+1;
+		  //if((int)labData[pos_J0+1]!=1 && pos_J0+1!=pos_J1) pos_J0=pos_J0+1;
+		  if((int)labData_2D[p1.y][p1.x+1]!=1 && labData_2D[p1.y][p1.x+1]!='@') p1.x = p1.x+1;
 		  else goto refaire;
 	       }			  
 	       break;		       
@@ -296,7 +312,7 @@ int main()
 	 ret = sendMove(move); //printf("pos_J0=%d\n",pos_J0);
       }
       //printLabyrinth();	
-	   
+
    
    }
    while((player ==1 && ret != MOVE_WIN) || (player==0 && ret != MOVE_LOSE));
