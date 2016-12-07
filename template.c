@@ -83,7 +83,7 @@ void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,int sizeX,int sizeY)
       {
 	 if((i==p1.y && j==p1.x) || (i==p2.y && j==p2.x) || (i==sizeY/2 && j==sizeX/2)) 
 	 {
-	    putchar(labData_2D[j][i]);
+	    putchar(labData_2D[i][j]);
 	    printf("|");
 	 }
 	    else 
@@ -96,7 +96,7 @@ void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,int sizeX,int sizeY)
       }
       printf("\n");
    }
-   }
+}
 
 char *maj_lab(char *labData,t_move move,int sizeX,int sizeY)
 {
@@ -195,8 +195,8 @@ int main()
 
    //labData[pos_tresor]='T';
    labData_2D=init_lab(labData,p1,p2,sizeX,sizeY);
-   
-   //affichage_2D(labData_2D,p1,p2,sizeX,sizeY);
+   printf("\n");
+   affichage_2D(labData_2D,p1,p2,sizeX,sizeY);
    //affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
    //printLabyrinth();
    
