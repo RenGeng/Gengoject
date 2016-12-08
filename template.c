@@ -17,32 +17,12 @@
 #include <string.h>
 
 typedef struct{
-   int x;
-   int y;
+   int x; //Coordonné x
+   int y; //Coordonnée y
    int energie;
 } t_joueur;
 extern int debug;	/* hack to enable debug messages */
 
-/*void affichage_manuel(char *labData,int pos_J0,int pos_J1,int pos_tresor,int sizeX,int sizeY)
-{
-   int i;
-   labData[pos_J0]='>';
-   labData[pos_J1]='@';
-   for(i=0;i<(sizeX*sizeY);i++) 
-   {
-      if(i%sizeX==0) printf("\n");
-      if (i==pos_J0 || i==pos_J1 || i==pos_tresor) 
-      {
-	 putchar(labData[i]);
-	 printf("|");
-      }
-      else printf("%d|",labData[i]);
-   }
-   labData[pos_J0]=0;
-   labData[pos_J1]=0;      
-   printf("\n");
-
-   }*/
 
 char** init_lab(char *labData,t_joueur p1,t_joueur p2,int sizeX, int sizeY)
 {
@@ -76,8 +56,6 @@ char** init_lab(char *labData,t_joueur p1,t_joueur p2,int sizeX, int sizeY)
 
 void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,int sizeX,int sizeY)
 {
-   labData_2D[p1.y][p1.x] = '>';
-   labData_2D[p2.y][p2.x] = '@';
    int i,j;   
    for(i=0;i<sizeY;i++)
    {
@@ -98,8 +76,6 @@ void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,int sizeX,int sizeY)
       }
       printf("\n");
    }
-   labData_2D[p1.y][p1.x] = 0;
-   labData_2D[p2.y][p2.x] = 0;
 }
 
 char *maj_lab(char *labData,t_move move,int sizeX,int sizeY)
@@ -154,7 +130,7 @@ int main()
    t_joueur p1,p2;
 
    /* connection to the server */
-   connectToServer( "pc4023.polytech.upmc.fr", 1234, "Gengo_Lance");
+   connectToServer( "pc4001.polytech.upmc.fr", 1234, "Gengo_Lance");
 	
 	
    /* wait for a game, and retrieve informations about it */
@@ -168,13 +144,9 @@ int main()
    printf("\n");
    //printf("L%d,R%d,U%d,D%d\n",ROTATE_LINE_LEFT,ROTATE_LINE_RIGHT,ROTATE_COLUMN_UP,ROTATE_COLUMN_DOWN);
    int mv; //mouvement choisi
-   //int pos_J0,pos_J1,pos_tresor; //position des joueurs en 1D
-   //pos_tresor=sizeX*(sizeY/2)+sizeX/2;
+   
    if(player==0) 
    {
-      //pos_J0=sizeX*(sizeY/2); 
-      //pos_J1=sizeX+pos_J0-1;
-
       p1.x = 0;			/* On est à gauche */
       p1.y = sizeY/2;
       p1.energie = 0; 		/* On commence avec 0 energie */
@@ -185,9 +157,6 @@ int main()
    }
    else
    {
-      //pos_J1=sizeX*(sizeY/2); 
-      //pos_J0=sizeX+pos_J1-1;
-
       p2.x = 0;			/* L'adversaire est à gauche */
       p2.y = sizeY/2;
       p2.energie = 0; 		/* Il commence avec 0 energie */
@@ -249,64 +218,106 @@ int main()
 	    case 3:
 	       goto refaire;
 	       break;
-	    case 4: 		/* Déplacement en haut */
-	        // if(pos_J0<sizeX)
-	       if(p1.y==0)
+
+	    /* Déplacement en haut */
+	    case 4:	       
+	       if(p1.y==0) //Si le joueur est tout en haut et veut aller en haut
 	       {
-		  //if((int)labData[sizeX*sizeY-sizeX+pos_J0]!=1 && sizeX*sizeY-sizeX+pos_J0!=pos_J1) pos_J0=sizeX*sizeY-sizeX+pos_J0;
-		  if((int)labData_2D[sizeY-1][p1.x]!=1 && labData_2D[sizeY-1][p1.x]!='@') p1.y=sizeY-1;
+		  if((int)labData_2D[sizeY-1][p1.x]!=1 && (int)labData_2D[sizeY-1][p1.x]!=64) 
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.y=sizeY-1;
+		     labData_2D[p1.y][p1.x]='>';
+		  }		     
 		  else goto refaire;
 	       }
-	       else
+	       else //Si le joueur est autre-part que tout en haut et veut aller en haut	       
 	       {
-		  //if((int)labData[pos_J0-sizeX]!=1 && pos_J0-sizeX!=pos_J1) pos_J0=pos_J0-sizeX;
-		  if((int)labData_2D[p1.y-1][p1.x]!=1 && labData_2D[p1.y-1][p1.x]!='@') p1.y = p1.y-1; 
+		  
+		  if((int)labData_2D[p1.y-1][p1.x]!=1 && (int)labData_2D[p1.y-1][p1.x]!=64) 
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.y=p1.y-1;
+		     labData_2D[p1.y][p1.x]='>';
+		  }	
 		  else goto refaire;
-	       }	       break;
-	    case 5: 		/* Déplacement en bas */
-	        // if(pos_J0>=(sizeX*sizeY-sizeX)) 
-	       if(p1.y == sizeY-1)
-	       {
-		  // if((int)labData[pos_J0%sizeX]!=1 && pos_J0%sizeX!=pos_J1) pos_J0=pos_J0%sizeX;
-		  if((int)labData_2D[0][p1.x]!=1 && labData_2D[0][p1.x]!='@') p1.y = 0;
+	       }	       
+	       break;
+
+	    /* Déplacement en bas */
+	    case 5: 		
+	       
+	       if(p1.y == sizeY-1) //Si le joueur est tout en bas et veut aller en bas
+	       {		  
+		  if((int)labData_2D[0][p1.x]!=1 && (int)labData_2D[0][p1.x]!=64)
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.y=0;
+		     labData_2D[p1.y][p1.x]='>';
+		  }	
 		  else goto refaire;
 	       } 		       
-	       else 
-	       {
-		  //if((int)labData[pos_J0+sizeX]!=1 && pos_J0+sizeX!=pos_J1) pos_J0=pos_J0+sizeX;
-		  if((int)labData_2D[p1.y+1][p1.x]!=1 && labData_2D[p1.y+1][p1.x]!='@') p1.y = p1.y+1;
+	       else //Si le joueur est autre-part que tout en bas et veut aller en bas
+	       {		  
+		  if((int)labData_2D[p1.y+1][p1.x]!=1 && (int)labData_2D[p1.y+1][p1.x]!=64)
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.y=p1.y+1;
+		     labData_2D[p1.y][p1.x]='>';
+		  }	
 		  else goto refaire;
 	       }
 	       break;
-	    case 6: 		/* Déplacement à gauche */
-	       if(p1.x==0)
-	       {
-		  //if((int)labData[pos_J0+sizeX-1]!=1 && pos_J0+sizeX-1!=pos_J1) pos_J0=pos_J0+sizeX-1;
-		  if((int)labData_2D[p1.y][sizeX-1]!=1 && labData_2D[p1.y][sizeX-1]!='@') p1.x = sizeX-1;
+
+	    /* Déplacement à gauche */
+	    case 6: 	
+	       if(p1.x==0) //Si le joueur est tout à gauche et veut aller à gauche
+	       {		  
+		  if((int)labData_2D[p1.y][sizeX-1]!=1 && (int)labData_2D[p1.y][sizeX-1]!=64)
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.x=sizeX-1;
+		     labData_2D[p1.y][p1.x]='>';
+		  }	
 		  else goto refaire;
 	       }
-	       else 
-	       {
-		  //if((int)labData[pos_J0-1]!=1 && pos_J0-1!=pos_J1) pos_J0=pos_J0-1;
-		  if((int)labData_2D[p1.y][p1.x-1]!=1 && labData_2D[p1.y][p1.x-1]!='@') p1.x = p1.x-1;
+	       else //Si le joueur est autre-part que tout à gauche et veut aller à gauche
+	       {		  
+		  if((int)labData_2D[p1.y][p1.x-1]!=1 && (int)labData_2D[p1.y][p1.x-1]!=64)
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.x=p1.x-1;
+		     labData_2D[p1.y][p1.x]='>';
+		  }	
 		  else goto refaire;
 	       }			  
 	       break;
-	    case 7: 		/* Déplacement à droite */
-	       if(p1.x == sizeX-1) 
-	       {
-		  //if((int)labData[pos_J0-sizeX+1]!=1 && pos_J0-sizeX+1!=pos_J1) pos_J0=pos_J0-sizeX+1;
-		  if((int)labData_2D[p1.y][0]!=1 && labData_2D[p1.y][0]!='@') p1.x=0;
+
+	    /* Déplacement à droite */
+	    case 7: 		
+	       if(p1.x == sizeX-1) //Si le joueur est tout à droite et veut aller à droite
+	       {		  
+		  if((int)labData_2D[p1.y][0]!=1 && (int)labData_2D[p1.y][0]!=64)
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.x=0;
+		     labData_2D[p1.y][p1.x]='>';
+		  }	
 		  else goto refaire;
 	       }
-	       else
-	       {
-		  //if((int)labData[pos_J0+1]!=1 && pos_J0+1!=pos_J1) pos_J0=pos_J0+1;
-		  if((int)labData_2D[p1.y][p1.x+1]!=1 && labData_2D[p1.y][p1.x+1]!='@') p1.x = p1.x+1;
+	       else //Si le joueur est autre-part que tout à droite et veut aller à droite
+	       {		  
+		  if((int)labData_2D[p1.y][p1.x+1]!=1 && (int)labData_2D[p1.y][p1.x+1]!=64)
+		  {
+		     labData_2D[p1.y][p1.x]=0;
+		     p1.x=p1.x+1;
+		     labData_2D[p1.y][p1.x]='>';
+		  }	
 		  else goto refaire;
 	       }			  
 	       break;		       
 	 }
+
 	 move.type=mv;
 	 move.value=0;
 	 ret = sendMove(move); //printf("pos_J0=%d\n",pos_J0);
