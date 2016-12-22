@@ -16,6 +16,7 @@
 #include "labyrinthAPI.h"
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 #define JOUEUR 8
 #define ADVER 7
 #define TRESOR 6
@@ -26,6 +27,14 @@ typedef struct{
    int energie;
    char symbole; //Symbole du joueur
 } t_joueur;
+
+typedef struct{
+   int x,y;  // Coordonnée x y de la case
+   int cost; // le coût pour aller à cette case
+   int heuristique; // le coût totale pour arriver au trésor
+   int xp,yp; // Coordonnée x y de la case précédente
+} t_case;
+
 extern int debug;	/* hack to enable debug messages */
 
 
@@ -411,6 +420,123 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
    }      
 }
 
+int list_non_vide(t_case* openList, int sizeX, int sizeY){
+   int i;
+   for (i = 0; i<sizeX*sizeY; i++) {
+      if (openList[i].x > -1) return 1;
+   }
+   return 0;
+}
+
+t_case* plus_petit(t_case* openList, int sizeX, int sizeY){
+   int i;
+   t_case* c = openList;
+   for (i=0; i<sizeX*sizeY;i++){
+      //printf("\n petit");
+      if ( (c->cost + c->heuristique) > (openList[i].cost + openList[i].heuristique)) c = (openList + i);
+   }
+   return c;
+}
+
+t_case calcule_voisin(t_case c, int x, int y, t_joueur tresor){
+   t_case v; 			/* Le voisin de c */
+   v.x = x;
+   v.y = y;
+   v.cost = c.cost+1;
+   v.heuristique = v.cost + abs( (tresor.x - v.x) - (tresor.y - v.y));
+   v.xp = c.x;
+   v.yp = c.y;
+   return v;
+}
+t_case recherche(t_case c, t_case* closedList, int sizeX,int sizeY){
+   int i;
+   t_case precedent;
+   for (i=0; i<sizeX*sizeY;i++){
+      if(closedList[i].x == c.xp && closedList[i].y == c.yp) precedent = closedList[i];
+   }
+   return precedent;
+}
+int* calcule_chemin(t_case c, t_case* closedList, int sizeX,int sizeY, t_joueur p1){
+   int* tab = (int*)calloc(sizeX*sizeY, sizeof(int));
+   int comp_tab = sizeX*sizeY-1;
+   while(c.x != p1.x && c.y != p1.y){
+      if(c.x - c.xp == 0 && c.y-c.yp == 1){
+	 tab[comp_tab--] = MOVE_DOWN;
+	 c = recherche(c,closedList,sizeX,sizeY);
+      }
+      else if (c.x -c.xp == 0 && c.y - c.yp == -1 ) {
+	 tab[comp_tab--] = MOVE_UP;
+	 c = recherche(c,closedList,sizeX,sizeY);
+      }
+      else if (c.x - c.xp == 1 && c.y - c.yp == 0) {
+	 tab[comp_tab--] = MOVE_RIGHT;
+	 c = recherche(c,closedList,sizeX,sizeY);
+      }
+      else if (c.x - c.xp == -1 && c.y - c.yp == 0) {
+	 tab[comp_tab--] = MOVE_LEFT;
+	 c = recherche(c,closedList,sizeX,sizeY);
+      }
+   }
+   return tab;
+}
+
+
+int* A_star(t_joueur p1, t_joueur tresor,char ** labData_2D,int sizeX, int sizeY){
+   t_case * openList = (t_case *)calloc(sizeX * sizeY,sizeof(t_case));
+   t_case * closedList = (t_case *)calloc(sizeX * sizeY,sizeof(t_case));
+   t_case * petit;
+   t_case c = {.x = p1.x, .y = p1.y, .cost = 0, .heuristique = 0, .xp = -1, .yp = -1}; /* Initialisation du joueur */
+   int* tab = (int*)calloc(sizeX*sizeY, sizeof(int));
+   int comp_closed = 0;
+   int comp_open = 1;
+   int x,y; 			/* Pour le calcule des voisins */
+   openList[0] = c;
+   while(list_non_vide(openList, sizeX,sizeY)){
+      printf("\n balbalbal :%d %d",c.y,c.x);
+      petit = plus_petit(openList, sizeX, sizeY);
+      c = *petit;
+      printf("\n balbalbal2 :%d %d",c.y,c.x);
+      petit->cost = 10000;	  /* Equivalent à effacer (je pense) */
+      petit->heuristique = 10000; /* Equivalent à effacer (je pense)*/
+      closedList[comp_closed++] = c;
+      if (c.x == tresor.x && c.y == tresor.y){
+	 tab = calcule_chemin(c,closedList,sizeX,sizeY,p1);
+	 return tab;
+      }
+     
+      else {
+	 //printf("\n balbalbal :%d %d",c.y,c.x);
+	 printf("\n cacaca: %d", labData_2D[c.y][c.x]);
+	 if ((int)labData_2D[c.y-1][c.x] != 1){ /* Si le voisin d'en haut n'est pas un mur */
+	    printf("\n coucou");
+	    y = c.y-1;
+	    x = c.x;
+	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
+	 }
+	 if ((int)labData_2D[c.y+1][c.x] != 1){ /* Si le voisin d'en bas n'est pas un mur */
+	    printf("\n coucou2");
+	    y = c.y+1;
+	    x = c.x;
+	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
+	 }
+	 if ((int)labData_2D[c.y][c.x-1] != 1){ /* Si le voisin de gauche n'est pas un mur */
+	    printf("\n coucou3");
+	    y = c.y;
+	    x = c.x-1;
+	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
+	 }
+	 if ((int)labData_2D[c.y][c.x+1] != 1){ /* Si le voisin de droite n'est pas un mur */
+	    printf("\n coucou4");
+	    y = c.y;
+	    x = c.x+1;
+	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
+	 }
+      }
+   }
+   return NULL;
+}
+
+
 
 int main()
 {
@@ -423,6 +549,8 @@ int main()
    int player;
    int sizeX,sizeY;
    t_joueur p1,p2,tresor;
+   int* tab = (int*)calloc(sizeX*sizeY, sizeof(int));
+   int comp_tab = 0;
 
    /* connection to the server */
    connectToServer( "pc4023.polytech.upmc.fr", 1234, "Gengo_Lance");
@@ -471,13 +599,14 @@ int main()
 
    //labData[pos_tresor]='T';
    labData_2D=init_lab(labData,p1,p2,tresor,sizeX,sizeY);
+   tab = A_star(p1,tresor,labData_2D,sizeX,sizeY);
    printf("\n");
      //affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
 
 
    do
    {
-      //sleep(1); // Pour ralentir l'affichage
+      sleep(1); // Pour ralentir l'affichage
       /* /\* display the labyrinth *\/ */
       /* printLabyrinth(); */
       /* affichage_2D(labData_2D,p1,p2,sizeX,sizeY); */
@@ -508,7 +637,8 @@ int main()
 	 printf("Mouvement souhaité Rien=%d\nGauche=%d\nDroite=%d\nHaut=%d\nBas=%d\nChoix: ",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
 	 //scanf("%1d %1d",&mv,&val);
       refaire:
-      	 mv=rand()%8;
+      	 //mv=rand()%8;
+	 mv = tab[comp_tab++];
 	 val = 0;
 	 printf("mv=%d m_val=%d\n",mv,val);
 	 switch(mv)
