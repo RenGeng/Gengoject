@@ -429,7 +429,7 @@ int main()
 	
 	
    /* wait for a game, and retrieve informations about it */
-   waitForLabyrinth( "PLAY_RANDOM timeout=6000", labName, &sizeX, &sizeY);
+   waitForLabyrinth( "ASTAR timeout=100", labName, &sizeX, &sizeY);
    labData = (char*) malloc( sizeX * sizeY );
    player = getLabyrinth(labData);
    printf("sizeX=%d et sizeY=%d\n",sizeX,sizeY); 
@@ -438,7 +438,7 @@ int main()
 	
    printf("\n");
    //printf("L%d,R%d,U%d,D%d\n",ROTATE_LINE_LEFT,ROTATE_LINE_RIGHT,ROTATE_COLUMN_UP,ROTATE_COLUMN_DOWN);
-   int mv,val; //mouvement choisi
+   int mv,val=0; //mouvement choisi
    
    if(player==0) 
    {
@@ -508,25 +508,35 @@ int main()
 	 printf("Mouvement souhaité Rien=%d\nGauche=%d\nDroite=%d\nHaut=%d\nBas=%d\nChoix: ",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
 	 //scanf("%1d %1d",&mv,&val);
       refaire:
-      	 mv=rand()%8;
-	 val = 0;
-	 printf("mv=%d m_val=%d\n",mv,val);
+	 printf("p1.energie=%d\n",p1.energie);
+	 if(p1.energie>=5) mv=rand()%8; //Si on a assez d'energie on change une colonne ou une ligne
+	 else mv=rand()%4+4; //Sinon non on bouge seulement
+	 //val = 0;
+	 //printf("mv=%d m_val=%d\n",mv,val);
 	 switch(mv)
 	 {
 	    case 0: //Bouger ligne à gauche
-	       goto refaire;
+	       //goto refaire;
+	       val=rand()%sizeY; //Choisi une ligne aléatoire
+	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
 	    case 1: //Bouger ligne à droite
-	       goto refaire;
+	       //goto refaire;
+	       val=rand()%sizeY; //Choisi ligne aléatoire
+	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
 	    case 2: //Bouger colone en haut
-	       goto refaire;
+	       //goto refaire;
+	       val=rand()%sizeX; //Choisi une colonne aléatoire
+	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
 	    case 3: //Bouger colone en bas
-	       goto refaire;
+	       //goto refaire;
+	       val=rand()%sizeX;//Choisi une colonne aléatoire
+	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
 
@@ -612,9 +622,11 @@ int main()
 	       }			  
 	       break;		       
 	 }
+	 if(mv>3) p1.energie+=1; //Si gagne de l'énergie que si l'on a bougé	 
 	 player = 1;
 	 move.type=mv;
 	 move.value=val;
+	 val=0;
 	 ret = sendMove(move); //printf("pos_J0=%d\n",pos_J0);
       }
       //printLabyrinth();	
