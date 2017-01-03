@@ -33,6 +33,7 @@ typedef struct{
    int cost; // le coût pour aller à cette case
    int heuristique; // le coût totale pour arriver au trésor
    int xp,yp; // Coordonnée x y de la case précédente
+   int explor; // 1 = exploré et 0 = inexploré
 } t_case;
 
 extern int debug;	/* hack to enable debug messages */
@@ -396,12 +397,135 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
 /*    return NULL; */
 /* } */
 
+int dedans(t_case *Liste,t_case v,int sizeX,int sizeY) //vérifie que v est dans la liste ou pas
+{
+   int i;
+   for(i=0;i<sizeX*sizeY;i++) {if(Liste[i].x==v.x && Liste[i].y==v.y) return 1;} //dedans
+   return 0; //pas dedans
+}
 
+t_case voisin(t_case c,int choix,int sizeX,int sizeY,char **labData_2D,t_joueur tresor)
+{
+   t_case v;
+   if(choix==0) //voisin haut
+   {
+      if(c.y==0) v.y=sizeY-1; //Sur la premiere ligne
+      else v.y=c.y-1; //N'importe où 
+      v.x=c.x;  
+   }
+   else if(choix==1) //voisin droite
+   {
+      if(c.x==sizeX-1) v.x=0; //Sur la derniere colone
+      else v.x=c.x+1; //N'importe où 
+      v.y=c.y;  
+   }
+   else if(choix==2) //voisin bas
+   {
+      if(c.y==sizeY-1) v.y=0; //Sur la derniere ligne
+      else v.y=c.y+1; //N'importe où 
+      v.x=c.x;  
+   }
+   else if(choix==3) //voisin gauche
+   {
+      if(c.x==0) v.x=sizeX-1; //Sur la premiere colone
+      else v.x=c.x-1; //N'importe où 
+      v.y=c.y;  
+   }
+   v.cost=c.cost+1;
+   v.heuristique=v.cost+abs(tresor.x-v.x)+abs(tresor.y-v.y);
+   v.xp=c.x;
+   v.yp=c.y;
+   v.explor=0;
+   if((int)labData_2D[v.y][v.x]==1) 
+      {
+	 v.cost=1000;
+      }
+   return v;  
+  	 
+}
+
+t_case recherche(t_case *Liste,int sizeX,int sizeY,t_case c)
+{
+   int i; 
+   t_case precedent;
+   for (i=0;i<sizeX*sizeY;i++)
+   {
+      if(Liste[i].x==c.xp&&Liste[i].y==c.yp) precedent=Liste[i];
+   }
+   return precedent;
+}
+
+int *A_star(t_joueur p1,t_joueur tresor,int sizeX,int sizeY,char **labData_2D)
+{
+   t_case *Liste=(t_case *)malloc(sizeX*sizeY*sizeof(t_case)); //lise des cases
+   t_case c={.x=p1.x,.y=p1.y,.cost=0,.heuristique=1000,.xp=-1,.yp=-1,.explor=0}; //premier élément (joueur)
+   int i,ind=1,ind_c=0,ind_plus_petit; //ind_c est l'indice de c dans la liste
+   t_case v; //voisin   
+   int *tab_temp=(int *)calloc(sizeX*sizeY,sizeof(int));
+   Liste[ind_c]=c; 
+   while(c.x!=tresor.x || c.y!=tresor.y) //tant qu'on est pas arrivé au tresor on continue
+      {
+	 printf("\n%d",ind_c);
+	 for(i=0;i<4;i++)
+	 {
+	    v=voisin(c,i,sizeX,sizeY,labData_2D,tresor);
+	    if(v.cost<1000 && dedans(Liste,v,sizeX,sizeY)==0) //Si ce n'est pas un mur et pas dans la liste
+	    {
+	       Liste[ind]=v; //On ajoute v à la liste
+	       ind+=1;
+	    }       
+	 }
+	 for(i=0;i<ind+1;i++) //On prend l'élément le plus proche du tresor inexploré
+	 {
+	    if((c.cost+c.heuristique)>(Liste[i].cost+Liste[i].heuristique) && Liste[i].explor==0) 
+	    {
+	       ind_plus_petit=i;
+	    }	
+	 }
+	  Liste[ind_c].explor=1;
+	  c=Liste[ind_plus_petit];
+	  ind_c=ind_plus_petit; 	  
+      }
+   printf("\n\n\nINDICE=%d",ind);
+   while(c.x!=p1.x && c.y!=p1.y)
+   { 
+      if(c.x-c.xp==0 && c.y-c.yp==1)
+      {
+	 tab_temp[ind]=MOVE_DOWN;
+	 c=recherche(Liste,sizeX,sizeY,c);
+      }
+      else if (c.x-c.xp==0 && c.y-c.yp==-1) 
+      {
+	 tab_temp[ind]=MOVE_UP;
+	 c=recherche(Liste,sizeX,sizeY,c);
+      }
+      else if (c.x-c.xp==1 && c.y-c.yp==0) 
+      {
+	 tab_temp[ind]=MOVE_RIGHT;
+	 c=recherche(Liste,sizeX,sizeY,c);
+      }
+      else if (c.x-c.xp==-1 && c.y-c.yp==0) 
+      {
+	 tab_temp[ind]=MOVE_LEFT;
+	 c=recherche(Liste,sizeX,sizeY,c);
+      }
+      ind+=1;
+   }  
+   
+   int *A_star=(int *)calloc(ind,sizeof(int));
+   for(i=0;i<ind;i++)
+      {
+	 A_star[ind-i-1]=tab_temp[i];
+	 printf("\n%d|",tab_temp[i]);
+      }
+   
+   return A_star;
+}
 
 int main()
 {
    srand(time(NULL));
-   char labName[50];					/* name of the labyrinth */
+   char labName[50];					/* name of the labyrinth*/
    char* labData;						/* data of the labyrinth */
    char** labData_2D; //labData en 2D
    t_return_code ret = MOVE_OK;		/* indicates the status of the previous move */
@@ -409,8 +533,8 @@ int main()
    int player;
    int sizeX,sizeY;
    t_joueur p1,p2,tresor;
-   int* tab = (int*)calloc(sizeX*sizeY, sizeof(int));
-   int comp_tab = 0;
+   int* mouvement;
+   int ind=0,i;
 
    /* connection to the server */
    connectToServer( "pc4023.polytech.upmc.fr", 1234, "Gengo_Lance");
@@ -426,7 +550,7 @@ int main()
 	
    printf("\n");
    //printf("L%d,R%d,U%d,D%d\n",ROTATE_LINE_LEFT,ROTATE_LINE_RIGHT,ROTATE_COLUMN_UP,ROTATE_COLUMN_DOWN);
-   int mv,val=0; //mouvement choisi
+   int mv,val; //mouvement choisi
    
    if(player==0) 
    {
@@ -459,7 +583,11 @@ int main()
 
    //labData[pos_tresor]='T';
    labData_2D=init_lab(labData,p1,p2,tresor,sizeX,sizeY);
-   //tab = A_star(p1,tresor,labData_2D,sizeX,sizeY);
+   mouvement=A_star(p1,tresor,sizeX,sizeY,labData_2D);
+   /*for(i=0;i<100;i++)
+      {	 
+	 printf("\nMouvement:\n%d|",mouvement[i]);
+	 }*/
    printf("\n");
      //affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
 
@@ -479,7 +607,7 @@ int main()
       /* 	 affichage_2D(labData_2D,p1,p2,sizeX,sizeY); */
       /* 	 printf("sizeX=%d sizeY=%d\np1x:%d p1y:%d\np2x:%d p2y:%d\n",sizeX,sizeY,p1.x,p1.y,p2.x,p2.y); */
       /* } */
-      system("clear");
+      //system("clear");
       printLabyrinth();
       affichage_2D(labData_2D,p1,p2,tresor,sizeX,sizeY);
       if (player==1) 
@@ -497,38 +625,38 @@ int main()
 	 printf("Mouvement souhaité Rien=%d\nGauche=%d\nDroite=%d\nHaut=%d\nBas=%d\nChoix: ",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
 	 //scanf("%1d %1d",&mv,&val);
       refaire:
-      	 //mv = tab[comp_tab++];
-	 //val = 0;
-	 //printf("mv=%d m_val=%d\n",mv,val);
+      	 mv = mouvement[ind++];
+	 val = 0;
+	 printf("mv=%d m_val=%d\n",mv,val);
 
-	 printf("p1.energie=%d\n",p1.energie);
- 	 if(p1.energie>=5) mv=rand()%8; //Si on a assez d'energie on change une colonne ou une ligne
- 	 else mv=rand()%4+4; //Sinon non on bouge seulement
+	 //printf("p1.energie=%d\n",p1.energie);
+ 	 //if(p1.energie>=5) mv=rand()%8; //Si on a assez d'energie on change une colonne ou une ligne
+ 	 //else mv=rand()%4+4; //Sinon non on bouge seulement
  	 //val = 0;
  	 //printf("mv=%d m_val=%d\n",mv,val);
 	 switch(mv)
 	 {
 	    case 0: //Bouger ligne à gauche
 	       //goto refaire;
-	       val=rand()%sizeY; //Choisi une ligne aléatoire
+	       //val=rand()%sizeY; //Choisi une ligne aléatoire
  	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
 	    case 1: //Bouger ligne à droite
 	       //goto refaire;
-	       val=rand()%sizeY; //Choisi une ligne aléatoire
+	       //val=rand()%sizeY; //Choisi une ligne aléatoire
  	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
 	    case 2: //Bouger colone en haut
 	       //goto refaire;
-	       val=rand()%sizeX; //Choisi une colonne aléatoire
+	       //val=rand()%sizeX; //Choisi une colonne aléatoire
  	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
 	    case 3: //Bouger colone en bas
 	       //goto refaire;
-	       val=rand()%sizeX; //Choisi une colonne aléatoire
+	       //val=rand()%sizeX; //Choisi une colonne aléatoire
  	       p1.energie=p1.energie-5;
 	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
 	       break;
