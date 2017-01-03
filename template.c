@@ -97,448 +97,304 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
    
    switch(mv)
    {
-      case 0: //Bouger une ligne vers la gauche
-
-	 /* Cas où JOUEUR et/ou l'ADVER et/ou TRESOR sont sur la ligne */
-	 if (p1->y == val){	/* Si on est sur la ligne */
-	    if (p2->y == val){	/* Si l'adversaire est aussi sur la ligne */
-	       labData_2D[p2->y][p2->x] = 0; // Pas sur que ça sert
-	       if (p2 -> x == 0) p2->x = sizeX-1;
-	       else p2->x--;}
-	    if (tresor->y == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0;
-	       if (tresor->x == 0) tresor->x = sizeX-1;
-	       else tresor->x--;
-	    }
-	    labData_2D[p1->y][p1->x] = 0; // Pas sur que ça sert
-	    if (p1->x == 0) p1->x = sizeX-1;
-	    else p1->x--;
-	    temp = labData_2D[val][0];
-	    for(i=0;i<sizeX-1;i++) labData_2D[val][i]=labData_2D[val][i+1];
-	    labData_2D[val][sizeX-1]=temp;
-	    labData_2D[p1->y][p1->x]=JOUEUR;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
-	 }
-
-	 /* Cas où l'adversaire et/ou TRESOR sont sur la ligne */
-	 if (p2->y == val){	/* Si l'adversaire est aussi sur la ligne */
-	    labData_2D[p2->y][p2->x] = 0; // Pas sur que ça sert
-	    if (p2->x == 0) p2->x = sizeX-1;
+      case 0: //Bouger une ligne vers la gauche	 
+	 if (p2->y == val)
+	 { /* Si l'adversaire est aussi sur la ligne */
+	    labData_2D[p2->y][p2->x] = 0;
+	    if (p2 -> x == 0) p2->x = sizeX-1;
 	    else p2->x--;
-	    if (tresor->y == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0; // Pas sur que ça sert
-	       if (tresor->x == 0) tresor->x = sizeX-1;
-	       else tresor->x--;
-	    }
-	    temp = labData_2D[val][0];
-	    for(i=0;i<sizeX-1;i++) labData_2D[val][i]=labData_2D[val][i+1];
-	    labData_2D[val][sizeX-1]=temp;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
 	 }
-
-	 /* Cas où seul le trésor est sur la ligne */
-	 if (tresor->y == val){ /* Si le trésor est aussi sur la ligne */
-	    labData_2D[tresor->y][tresor->x] = 0; // Pas sur que ça sert
+	 if (tresor->y == val)
+	 { /* Si le trésor est aussi sur la ligne */
+	    labData_2D[tresor->y][tresor->x] = 0;
 	    if (tresor->x == 0) tresor->x = sizeX-1;
 	    else tresor->x--;
-	    temp = labData_2D[val][0];
-	    for(i=0;i<sizeX-1;i++) labData_2D[val][i]=labData_2D[val][i+1];
-	    labData_2D[val][sizeX-1]=temp;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
 	 }
-	 
-	 /* Cas ou personne est sur la ligne */
-	 else{
-	    temp = labData_2D[val][0];
-	    for(i=0;i<sizeX-1;i++) 
-	    {
-	       labData_2D[val][i]=labData_2D[val][i+1];
-	    }
-	    labData_2D[val][sizeX-1]=temp;
-	    break;
-	 }
-      case 1: //Bouger une ligne vers la droite
-	 /* Cas où JOUEUR et/ou ADVER et/ou TRESOR sont sur la ligne */
-	 if (p1->y == val){	/* Si on est sur la ligne */
-	    if (p2->y == val){	/* Si l'adversaire est aussi sur la ligne */
-	       labData_2D[p2->y][p2->x] = 0;
-	       if (p2->x == sizeX-1) p2->x = 0;
-	       else p2->x++;}
-	    if (tresor->y == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0;
-	       if (tresor->x == sizeX-1) tresor->x = 0;
-	       else tresor->x++;
-	    }
+	 if (p1->y == val)
+	 { /* Si on est sur la ligne */
 	    labData_2D[p1->y][p1->x] = 0;
-	    if (p1->x == sizeX-1) p1->x = 0;
-	    else p1->x++;
-	    temp = labData_2D[val][sizeX-1];
-	    for(i=sizeX-1;i>0;i--) labData_2D[val][i]=labData_2D[val][i-1];
-	    labData_2D[val][0]=temp;
-	    labData_2D[p1->y][p1->x]=JOUEUR;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x] = TRESOR;
-	    break;
+	    if (p1->x == 0) p1->x = sizeX-1;
+	    else p1->x--;
 	 }
-
-	 /* Cas ou ADVER et/ou TRESOR sont sur la ligne */
-	 if (p2->y == val){	/* Si l'adversaire est aussi sur la ligne */
+	 temp = labData_2D[val][0];
+	 for(i=0;i<sizeX-1;i++) labData_2D[val][i]=labData_2D[val][i+1];
+	 labData_2D[val][sizeX-1]=temp;
+	 labData_2D[p1->y][p1->x]=JOUEUR;
+	 labData_2D[p2->y][p2->x]=ADVER;
+	 labData_2D[tresor->y][tresor->x]=TRESOR;
+	 break;   
+	 
+      case 1: //Bouger une ligne vers la droite   	  	
+	 if (p2->y == val)
+	 { /* Si l'adversaire est aussi sur la ligne */
 	    labData_2D[p2->y][p2->x] = 0;
 	    if (p2->x == sizeX-1) p2->x = 0;
-      	    else p2->x++;
-	    if (tresor->y == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0;
-	       if (tresor->x == sizeX-1) tresor->x = 0;
-	       else tresor->x++;
-	    }
-	    temp = labData_2D[val][sizeX-1];
-	    for(i=sizeX-1;i>0;i--) labData_2D[val][i]=labData_2D[val][i-1];
-	    labData_2D[val][0]=temp;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x] = TRESOR;
-	    break;
+	    else p2->x++;
 	 }
-
-	 /* Cas ou TRESOR est sur la ligne */
-	 if (tresor->y == val){ /* Si le trésor est aussi sur la ligne */
+	 if (tresor->y == val)
+	 { /* Si le trésor est aussi sur la ligne */
 	    labData_2D[tresor->y][tresor->x] = 0;
 	    if (tresor->x == sizeX-1) tresor->x = 0;
 	    else tresor->x++;
-	    temp = labData_2D[val][sizeX-1];
-	    for(i=sizeX-1;i>0;i--) labData_2D[val][i]=labData_2D[val][i-1];
-	    labData_2D[val][0]=temp;
-	    labData_2D[tresor->y][tresor->x] = TRESOR;
-	    break;
 	 }
-	 /* Cas ou personne est sur la ligne */
-	 else{
-	    temp = labData_2D[val][sizeX-1];
-	    for(i=sizeX-1;i>0;i--) 
-	    {
-	       labData_2D[val][i]=labData_2D[val][i-1];
-	    }
-	    labData_2D[val][0]=temp;
-	    break;
+	 if (p1->y == val)
+	 { /* Si on est sur la ligne */
+   	    labData_2D[p1->y][p1->x] = 0;
+   	    if (p1->x == sizeX-1) p1->x = 0;
+   	    else p1->x++;
 	 }
-      case 2: //Bouger une colonne vers le haut
+	 temp = labData_2D[val][sizeX-1];
+	 for(i=sizeX-1;i>0;i--) labData_2D[val][i]=labData_2D[val][i-1];
+	 labData_2D[val][0]=temp;
+	 labData_2D[p1->y][p1->x]=JOUEUR;
+	 labData_2D[p2->y][p2->x]=ADVER;
+	 labData_2D[tresor->y][tresor->x] = TRESOR;
+	 break;
 
-	  /* Cas où JOUEUR et/ou l'ADVER et/ou TRESOR sont sur la ligne */
-	 if (p1->x == val){	/* Si on est sur la ligne */
-	    if (p2->x == val){	/* Si l'adversaire est aussi sur la ligne */
-	       labData_2D[p2->y][p2->x] = 0; // Pas sur que ça sert
-	       if (p2 -> y == 0) p2->y = sizeY-1;
-	       else p2->y--;}
-	    if (tresor->x == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0;
-	       if (tresor->y == 0) tresor->y = sizeY-1;
-	       else tresor->y--;
-	    }
-	    labData_2D[p1->y][p1->x] = 0; // Pas sur que ça sert
-	    if (p1->y == 0) p1->y = sizeY-1;
-	    else p1->y--;
-	    temp = labData_2D[0][val];
-	    for(i=0;i<sizeY-1;i++) labData_2D[i][val]=labData_2D[i+1][val];
-	    labData_2D[sizeY-1][val]=temp;
-	    labData_2D[p1->y][p1->x]=JOUEUR;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
-	 }
-
-	 /* Cas où l'adversaire et/ou TRESOR sont sur la ligne */
-	 if (p2->x == val){	/* Si l'adversaire est aussi sur la ligne */
-	    labData_2D[p2->y][p2->x] = 0; // Pas sur que ça sert
-	    if (p2->y == 0) p2->y = sizeY-1;
+      case 2: //Bouger une colonne vers le haut  	  
+   	 if (p2->x == val)
+	 { /* Si l'adversaire est aussi sur la ligne */
+	    labData_2D[p2->y][p2->x] = 0;
+	    if (p2 -> y == 0) p2->y = sizeY-1;
 	    else p2->y--;
-	    if (tresor->x == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0; // Pas sur que ça sert
-	       if (tresor->y == 0) tresor->y = sizeY-1;
-	       else tresor->y--;
-	    }
-	    temp = labData_2D[0][val];
-	    for(i=0;i<sizeY-1;i++) labData_2D[i][val]=labData_2D[i+1][val];
-	    labData_2D[sizeY-1][val]=temp;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
 	 }
-
-	 /* Cas où seul le trésor est sur la ligne */
-	 if (tresor->x == val){ /* Si le trésor est aussi sur la ligne */
-	    labData_2D[tresor->y][tresor->x] = 0; // Pas sur que ça sert
+	 if (tresor->x == val)
+	 { /* Si le trésor est aussi sur la ligne */
+	    labData_2D[tresor->y][tresor->x] = 0;
 	    if (tresor->y == 0) tresor->y = sizeY-1;
 	    else tresor->y--;
-	    temp = labData_2D[0][val];
-	    for(i=0;i<sizeY-1;i++) labData_2D[i][val]=labData_2D[i+1][val];
-	    labData_2D[sizeY-1][val]=temp;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
 	 }
+	 if (p1->x == val)
+	 { /* Si on est sur la ligne */
+   	    labData_2D[p1->y][p1->x] = 0;
+   	    if (p1->y == 0) p1->y = sizeY-1;
+   	    else p1->y--;
+	 }
+	 temp = labData_2D[0][val];
+	 for(i=0;i<sizeY-1;i++) labData_2D[i][val]=labData_2D[i+1][val];
+	 labData_2D[sizeY-1][val]=temp;
+	 labData_2D[p1->y][p1->x]=JOUEUR;
+	 labData_2D[p2->y][p2->x]=ADVER;
+	 labData_2D[tresor->y][tresor->x]=TRESOR;
+	 break;
 	 
-	 /* Cas ou personne est sur la ligne */
-	 else{
-	    temp = labData_2D[0][val];
-	    for(i=0;i<sizeY-1;i++) 
-	    {
-	       labData_2D[i][val]=labData_2D[i+1][val];
-	    }
-	    labData_2D[sizeY-1][val]=temp;
-	    break;
-	 }
-
-      case 3: //Bouger une colonne vers le bas
-
-	 /* Cas où JOUEUR et/ou l'ADVER et/ou TRESOR sont sur la ligne */
-	 if (p1->x == val){	/* Si on est sur la ligne */
-	    if (p2->x == val){	/* Si l'adversaire est aussi sur la ligne */
-	       labData_2D[p2->y][p2->x] = 0; // Pas sur que ça sert
-	       if (p2 -> y == sizeY-1) p2->y = 0;
-	       else p2->y++;}
-	    if (tresor->x == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0;
-	       if (tresor->y == sizeY-1) tresor->y = 0;
-	       else tresor->y++;
-	    }
-	    labData_2D[p1->y][p1->x] = 0; // Pas sur que ça sert
-	    if (p1->y == sizeY-1) p1->y = 0;
-	    else p1->y++;
-	    temp = labData_2D[sizeY-1][val];
-	    for(i=sizeY-1;i>0;i--) labData_2D[i][val]=labData_2D[i-1][val];
-	    labData_2D[0][val]=temp;
-	    labData_2D[p1->y][p1->x]=JOUEUR;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
-	 }
-
-	 /* Cas où l'adversaire et/ou TRESOR sont sur la ligne */
-	 if (p2->x == val){	/* Si l'adversaire est aussi sur la ligne */
-	    labData_2D[p2->y][p2->x] = 0; // Pas sur que ça sert
-	    if (p2->y == sizeY-1) p2->y = 0;
+      case 3: //Bouger une colonne vers le bas   	 
+	 if (p2->x == val)
+	 { /* Si l'adversaire est aussi sur la ligne */
+	    labData_2D[p2->y][p2->x] = 0;
+	    if (p2 -> y == sizeY-1) p2->y = 0;
 	    else p2->y++;
-	    if (tresor->x == val){ /* Si le trésor est aussi sur la ligne */
-	       labData_2D[tresor->y][tresor->x] = 0; // Pas sur que ça sert
-	       if (tresor->y == sizeY-1) tresor->y = 0;
-	       else tresor->y++;
-	    }
-	    temp = labData_2D[sizeY-1][val];
-	    for(i=sizeY-1;i>0;i--) labData_2D[i][val]=labData_2D[i-1][val];
-	    labData_2D[0][val]=temp;
-	    labData_2D[p2->y][p2->x]=ADVER;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
 	 }
-
-	 /* Cas où seul le trésor est sur la ligne */
-	 if (tresor->x == val){ /* Si le trésor est aussi sur la ligne */
-	    labData_2D[tresor->y][tresor->x] = 0; // Pas sur que ça sert
+	 if (tresor->x == val)
+	 { /* Si le trésor est aussi sur la ligne */
+	    labData_2D[tresor->y][tresor->x] = 0;
 	    if (tresor->y == sizeY-1) tresor->y = 0;
 	    else tresor->y++;
-	    temp = labData_2D[sizeY-1][val];
-	    for(i=sizeY-1;i>0;i--) labData_2D[i][val]=labData_2D[i-1][val];
-	    labData_2D[0][val]=temp;
-	    labData_2D[tresor->y][tresor->x]=TRESOR;
-	    break;
 	 }
-	 
-	 /* Cas ou personne est sur la ligne */
-	 else{
-	    temp = labData_2D[sizeY-1][val];
-	    for(i=sizeY-1;i>0;i--) labData_2D[i][val]=labData_2D[i-1][val];
-	    labData_2D[0][val]=temp;
-	    break;
+	 if (p1->x == val)
+	 { /* Si on est sur la ligne */
+   	    labData_2D[p1->y][p1->x] = 0;
+   	    if (p1->y == sizeY-1) p1->y = 0;
+   	    else p1->y++;
 	 }
+	 temp = labData_2D[sizeY-1][val];
+	 for(i=sizeY-1;i>0;i--) labData_2D[i][val]=labData_2D[i-1][val];
+	 labData_2D[0][val]=temp;
+	 labData_2D[p1->y][p1->x]=JOUEUR;
+	 labData_2D[p2->y][p2->x]=ADVER;
+	 labData_2D[tresor->y][tresor->x]=TRESOR;
+	 break;
+
       case 4: // Déplacement vers le haut
-	 if (player == 1) // quand c'est l'adversaire de jouer
-	 {
-	    labData_2D[p2->y][p2->x] = 0;
-	    if (p2->y == 0) p2->y = sizeY-1;
-	    else p2->y --;
-	    labData_2D[p2->y][p2->x] = ADVER;
-	 }
-	 else  // quand c'est nous qui joue
-	 {
-	    labData_2D[p1->y][p1->x] = 0;
-	    if (p1->y == 0) p1->y = sizeY-1;
-	    else p1->y --;
-	    labData_2D[p1->y][p1->x] = JOUEUR;
-	 }
-	 break;
+   	 if (player == 1) // quand c'est l'adversaire de jouer
+   	 {
+   	    labData_2D[p2->y][p2->x] = 0;
+   	    if (p2->y == 0) p2->y = sizeY-1;
+   	    else p2->y --;
+   	    labData_2D[p2->y][p2->x] = ADVER;
+   	 }
+   	 else  // quand c'est nous qui joue
+   	 {
+   	    labData_2D[p1->y][p1->x] = 0;
+   	    if (p1->y == 0) p1->y = sizeY-1;
+   	    else p1->y --;
+   	    labData_2D[p1->y][p1->x] = JOUEUR;
+   	 }
+   	 break;
       case 5: // Déplacement vers la bas
-	 if (player == 1)
-	 {
-	    labData_2D[p2->y][p2->x] = 0;
-	    if (p2->y == sizeY-1) p2->y = 0;
-	    else p2->y ++;
-	    labData_2D[p2->y][p2->x] = ADVER;
-	 }
-	 else  // quand c'est nous qui joue
-	 {
-	    labData_2D[p1->y][p1->x] = 0;
-	    if (p1->y == sizeY-1) p1->y = 0;
-	    else p1->y ++;
-	    labData_2D[p1->y][p1->x] = JOUEUR;
-	 }
-	 break;
+   	 if (player == 1)
+   	 {
+   	    labData_2D[p2->y][p2->x] = 0;
+   	    if (p2->y == sizeY-1) p2->y = 0;
+   	    else p2->y ++;
+   	    labData_2D[p2->y][p2->x] = ADVER;
+   	 }
+   	 else  // quand c'est nous qui joue
+   	 {
+   	    labData_2D[p1->y][p1->x] = 0;
+   	    if (p1->y == sizeY-1) p1->y = 0;
+   	    else p1->y ++;
+   	    labData_2D[p1->y][p1->x] = JOUEUR;
+   	 }
+   	 break;
       case 6: // Déplacement vers la gauche
-	 if (player == 1)
-	 {
-	    labData_2D[p2->y][p2->x] = 0;
-	    if (p2->x == 0) p2->x = sizeX-1;
-	    else p2->x --;
-	    labData_2D[p2->y][p2->x] = ADVER;
-	 }
-	 else  // quand c'est nous qui joue
-	 {
-	    labData_2D[p1->y][p1->x] = 0;
-	    if (p1->x == 0) p1->x = sizeX-1;
-	    else p1->x --;
-	    labData_2D[p1->y][p1->x] = JOUEUR;
-	 }
-	 break;
+   	 if (player == 1)
+   	 {
+   	    labData_2D[p2->y][p2->x] = 0;
+   	    if (p2->x == 0) p2->x = sizeX-1;
+   	    else p2->x --;
+   	    labData_2D[p2->y][p2->x] = ADVER;
+   	 }
+   	 else  // quand c'est nous qui joue
+   	 {
+   	    labData_2D[p1->y][p1->x] = 0;
+   	    if (p1->x == 0) p1->x = sizeX-1;
+   	    else p1->x --;
+   	    labData_2D[p1->y][p1->x] = JOUEUR;
+   	 }
+   	 break;
       case 7: // Déplacement vers la droite
-	 if (player == 1)
-	 {
-	    labData_2D[p2->y][p2->x] = 0;
-	    if (p2->x == sizeX-1) p2->x = 0;
-	    else p2->x ++;
-	    labData_2D[p2->y][p2->x] = ADVER;
-	 }
-	 else  // quand c'est nous qui joue
-	 {
-	    labData_2D[p1->y][p1->x] = 0;
-	    if (p1->x == sizeX-1) p1->x = 0;
-	    else p1->x ++;
-	    labData_2D[p1->y][p1->x] = JOUEUR;
-	 }
-	 break;
-   }      
+   	 if (player == 1)
+   	 {
+   	    labData_2D[p2->y][p2->x] = 0;
+   	    if (p2->x == sizeX-1) p2->x = 0;
+   	    else p2->x ++;
+   	    labData_2D[p2->y][p2->x] = ADVER;
+   	 }
+   	 else  // quand c'est nous qui joue
+   	 {
+   	    labData_2D[p1->y][p1->x] = 0;
+   	    if (p1->x == sizeX-1) p1->x = 0;
+   	    else p1->x ++;
+   	    labData_2D[p1->y][p1->x] = JOUEUR;
+   	 }
+   	 break;
+   } 
 }
 
-int list_non_vide(t_case* openList, int sizeX, int sizeY){
-   int i;
-   for (i = 0; i<sizeX*sizeY; i++) {
-      if (openList[i].x > -1) return 1;
-   }
-   return 0;
-}
+/* int list_non_vide(t_case* openList, int sizeX, int sizeY){ */
+/*    int i; */
+/*    for (i = 0; i<sizeX*sizeY; i++) { */
+/*       if (openList[i].x > -1) return 1; //pas vide */
+/*    } */
+/*    return 0; //vide */
+/* } */
 
-t_case* plus_petit(t_case* openList, int sizeX, int sizeY){
-   int i;
-   t_case* c = openList;
-   for (i=0; i<sizeX*sizeY;i++){
-      //printf("\n petit");
-      if ( (c->cost + c->heuristique) > (openList[i].cost + openList[i].heuristique)) c = openList+i;
-   }
-   return c;
-}
+/* t_case* plus_petit(t_case* openList, int sizeX, int sizeY){ */
+/*    int i; */
+/*    t_case* c = openList; */
+/*    for (i=0; i<sizeX*sizeY;i++){ */
+/*       //printf("\n petit"); */
+/*       if ( (c->cost + c->heuristique) > (openList[i].cost + openList[i].heuristique)) c = openList+i; */
+/*    } */
+/*    return c; */
+/* } */
 
-t_case calcule_voisin(t_case c, int x, int y, t_joueur tresor){
-   t_case v; 			/* Le voisin de c */
-   v.x = x;
-   v.y = y;
-   v.cost = c.cost+1;
-   v.heuristique = v.cost + abs( (tresor.x - v.x) - (tresor.y - v.y));
-   v.xp = c.x;
-   v.yp = c.y;
-   return v;
-}
-t_case recherche(t_case c, t_case* closedList, int sizeX,int sizeY){
-   int i;
-   t_case precedent;
-   for (i=0; i<sizeX*sizeY;i++){
-      if(closedList[i].x == c.xp && closedList[i].y == c.yp) precedent = closedList[i];
-   }
-   return precedent;
-}
-int* calcule_chemin(t_case c, t_case* closedList, int sizeX,int sizeY, t_joueur p1){
-   int* tab = (int*)calloc(sizeX*sizeY, sizeof(int));
-   int comp_tab = sizeX*sizeY-1;
-   while(c.x != p1.x && c.y != p1.y){
-      if(c.x - c.xp == 0 && c.y-c.yp == 1){
-	 tab[comp_tab--] = MOVE_DOWN;
-	 c = recherche(c,closedList,sizeX,sizeY);
-      }
-      else if (c.x -c.xp == 0 && c.y - c.yp == -1 ) {
-	 tab[comp_tab--] = MOVE_UP;
-	 c = recherche(c,closedList,sizeX,sizeY);
-      }
-      else if (c.x - c.xp == 1 && c.y - c.yp == 0) {
-	 tab[comp_tab--] = MOVE_RIGHT;
-	 c = recherche(c,closedList,sizeX,sizeY);
-      }
-      else if (c.x - c.xp == -1 && c.y - c.yp == 0) {
-	 tab[comp_tab--] = MOVE_LEFT;
-	 c = recherche(c,closedList,sizeX,sizeY);
-      }
-   }
-   return tab;
-}
+/* t_case calcule_voisin(t_case c, int x, int y, t_joueur tresor){ */
+/*    t_case v; 			/\* Le voisin de c *\/ */
+/*    v.x = x; */
+/*    v.y = y; */
+/*    v.cost = c.cost+1; */
+/*    v.heuristique = v.cost + abs( (tresor.x - v.x) - (tresor.y - v.y)); */
+/*    v.xp = c.x; */
+/*    v.yp = c.y; */
+/*    return v; */
+/* } */
+/* t_case recherche(t_case c, t_case* closedList, int sizeX,int sizeY){ */
+/*    int i; */
+/*    t_case precedent; */
+/*    for (i=0; i<sizeX*sizeY;i++){ */
+/*       if(closedList[i].x == c.xp && closedList[i].y == c.yp) precedent = closedList[i]; */
+/*    } */
+/*    return precedent; */
+/* } */
+/* int* calcule_chemin(t_case c, t_case* closedList, int sizeX,int sizeY, t_joueur p1){ */
+/*    int* tab = (int*)calloc(sizeX*sizeY, sizeof(int)); */
+/*    int comp_tab = sizeX*sizeY-1; */
+/*    while(c.x != p1.x && c.y != p1.y){ */
+/*       if(c.x - c.xp == 0 && c.y-c.yp == 1){ */
+/* 	 tab[comp_tab--] = MOVE_DOWN; */
+/* 	 c = recherche(c,closedList,sizeX,sizeY); */
+/*       } */
+/*       else if (c.x -c.xp == 0 && c.y - c.yp == -1 ) { */
+/* 	 tab[comp_tab--] = MOVE_UP; */
+/* 	 c = recherche(c,closedList,sizeX,sizeY); */
+/*       } */
+/*       else if (c.x - c.xp == 1 && c.y - c.yp == 0) { */
+/* 	 tab[comp_tab--] = MOVE_RIGHT; */
+/* 	 c = recherche(c,closedList,sizeX,sizeY); */
+/*       } */
+/*       else if (c.x - c.xp == -1 && c.y - c.yp == 0) { */
+/* 	 tab[comp_tab--] = MOVE_LEFT; */
+/* 	 c = recherche(c,closedList,sizeX,sizeY); */
+/*       } */
+/*    } */
+/*    return tab; */
+/* } */
 
 
-int* A_star(t_joueur p1, t_joueur tresor,char ** labData_2D,int sizeX, int sizeY){
-   t_case * openList = (t_case *)calloc(sizeX * sizeY,sizeof(t_case));
-   t_case * closedList = (t_case *)calloc(sizeX * sizeY,sizeof(t_case));
-   t_case * petit;
-   t_case c = {.x = p1.x, .y = p1.y, .cost = 0, .heuristique = 0, .xp = -1, .yp = -1}; /* Initialisation du joueur */
-   int* tab = (int*)calloc(sizeX*sizeY, sizeof(int));
-   int comp_closed = 0;
-   int comp_open = 1;
-   int x,y; 			/* Pour le calcule des voisins */
-   openList[0] = c;
-   while(list_non_vide(openList, sizeX,sizeY)){
-      printf("\n balbalbal :%d %d",c.y,c.x);
-      petit = plus_petit(openList, sizeX, sizeY);
-      c = *petit;
-      printf("\n balbalbal2 :%d %d",c.y,c.x);
-      petit->cost = 1000;	  /* Equivalent à effacer (je pense) */
-      petit->heuristique = 1000; /* Equivalent à effacer (je pense)*/
-      closedList[comp_closed++] = c;
-      if (c.x == tresor.x && c.y == tresor.y){
-	 tab = calcule_chemin(c,closedList,sizeX,sizeY,p1);
-	 return tab;
-      }
+/* int* A_star(t_joueur p1, t_joueur tresor,char ** labData_2D,int sizeX, int sizeY){ */
+/*    t_case * openList = (t_case *)calloc(sizeX * sizeY,sizeof(t_case)); */
+/*    t_case * closedList = (t_case *)calloc(sizeX * sizeY,sizeof(t_case)); */
+/*    t_case * petit; */
+/*    t_case c = {.x = p1.x, .y = p1.y, .cost = 0, .heuristique = 0, .xp = -1, .yp = -1}; /\* Initialisation du joueur *\/ */
+/*    int* tab = (int*)calloc(sizeX*sizeY, sizeof(int)); */
+/*    int comp_closed = 0; */
+/*    int comp_open = 1; */
+/*    int x,y,i,k=0; 			/\* Pour le calcule des voisins *\/ */
+/*    openList[0] = c; */
+   
+/*    for(i=1;i<sizeX*sizeY;i++) openList[i].cost=5000; */
+/*    while(list_non_vide(openList, sizeX,sizeY)){ */
+/*       printf("\nsizeX*sizeY=%d et k=%d",sizeX*sizeY,k); */
+/*       k+=1; */
+/*       printf("\nc.y=%d c.x=%d",c.y,c.x); */
+/*       petit = plus_petit(openList, sizeX, sizeY); */
+/*       c = *petit; */
+/*       printf("\nc.y=%d c.x=%d",c.y,c.x); */
+/*       petit->cost = 1000;	  /\* Equivalent à effacer (je pense) *\/ */
+/*       petit->heuristique = 1000; /\* Equivalent à effacer (je pense)*\/ */
+/*       closedList[comp_closed++] = c; */
+/*       if (c.x == tresor.x && c.y == tresor.y){ */
+/* 	 tab = calcule_chemin(c,closedList,sizeX,sizeY,p1); */
+/* 	 return tab; */
+/*       } */
      
-      else {
-	 //printf("\n balbalbal :%d %d",c.y,c.x);
-	 printf("\n cacaca: %d", labData_2D[c.y][c.x]);
-	 if ((int)labData_2D[c.y-1][c.x] != 1){ /* Si le voisin d'en haut n'est pas un mur */
-	    printf("\n coucou");
-	    y = c.y-1;
-	    x = c.x;
-	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
-	    printf("\n haut: %d", openList[comp_open-1].cost);
-	 }
-	 if ((int)labData_2D[c.y+1][c.x] != 1){ /* Si le voisin d'en bas n'est pas un mur */
-	    printf("\n coucou2");
-	    y = c.y+1;
-	    x = c.x;
-	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
-	    printf("\n bas: %d", openList[comp_open-1].cost);
-	 }
-	 if ((int)labData_2D[c.y][c.x-1] != 1){ /* Si le voisin de gauche n'est pas un mur */
-	    printf("\n coucou3");
-	    y = c.y;
-	    x = c.x-1;
-	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
-	    printf("\n gauche: %d", openList[comp_open-1].cost);
-	 }
-	 if ((int)labData_2D[c.y][c.x+1] != 1){ /* Si le voisin de droite n'est pas un mur */
-	    printf("\n coucou4");
-	    y = c.y;
-	    x = c.x+1;
-	    openList[comp_open++] = calcule_voisin(c,x,y,tresor);
-	    printf("\n droite: %d", openList[comp_open-1].cost);
-	 }
-      }
-   }
-   return NULL;
-}
+/*       else { */
+/* 	 //printf("\n balbalbal :%d %d",c.y,c.x); */
+/* 	 printf("\nlabData_2D[c.y][c.x]=%d", labData_2D[c.y][c.x]); */
+/* 	 if ((int)labData_2D[c.y-1][c.x] != 1){ /\* Si le voisin d'en haut n'est pas un mur *\/ */
+/* 	    //printf("\npas un mur 1"); */
+/* 	    y = c.y-1; */
+/* 	    x = c.x; */
+/* 	    openList[comp_open++] = calcule_voisin(c,x,y,tresor); */
+/* 	    //printf("\n haut: %d", openList[comp_open-1].cost); */
+/* 	 } */
+/* 	 if ((int)labData_2D[c.y+1][c.x] != 1){ /\* Si le voisin d'en bas n'est pas un mur *\/ */
+/* 	    //printf("\npas un mur 2"); */
+/* 	    y = c.y+1; */
+/* 	    x = c.x; */
+/* 	    openList[comp_open++] = calcule_voisin(c,x,y,tresor); */
+/* 	    //printf("\n bas: %d", openList[comp_open-1].cost); */
+/* 	 } */
+/* 	 if ((int)labData_2D[c.y][c.x-1] != 1){ /\* Si le voisin de gauche n'est pas un mur *\/ */
+/* 	    //printf("\npas un mur 3"); */
+/* 	    y = c.y; */
+/* 	    x = c.x-1; */
+/* 	    openList[comp_open++] = calcule_voisin(c,x,y,tresor); */
+/* 	    //printf("\n gauche: %d", openList[comp_open-1].cost); */
+/* 	 } */
+/* 	 if ((int)labData_2D[c.y][c.x+1] != 1){ /\* Si le voisin de droite n'est pas un mur *\/ */
+/* 	    //printf("\npas un mur 4"); */
+/* 	    y = c.y; */
+/* 	    x = c.x+1; */
+/* 	    openList[comp_open++] = calcule_voisin(c,x,y,tresor); */
+/* 	    //printf("\n droite: %d", openList[comp_open-1].cost); */
+/* 	 } */
+/*       } */
+/*    } */
+/*    return NULL; */
+/* } */
 
 
 
@@ -561,7 +417,7 @@ int main()
 	
 	
    /* wait for a game, and retrieve informations about it */
-   waitForLabyrinth( "ASTAR timeout=100", labName, &sizeX, &sizeY);
+   waitForLabyrinth( "DO_NOTHING timeout=1000", labName, &sizeX, &sizeY);
    labData = (char*) malloc( sizeX * sizeY );
    player = getLabyrinth(labData);
    printf("sizeX=%d et sizeY=%d\n",sizeX,sizeY); 
@@ -603,7 +459,7 @@ int main()
 
    //labData[pos_tresor]='T';
    labData_2D=init_lab(labData,p1,p2,tresor,sizeX,sizeY);
-   tab = A_star(p1,tresor,labData_2D,sizeX,sizeY);
+   //tab = A_star(p1,tresor,labData_2D,sizeX,sizeY);
    printf("\n");
      //affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
 
@@ -641,10 +497,7 @@ int main()
 	 printf("Mouvement souhaité Rien=%d\nGauche=%d\nDroite=%d\nHaut=%d\nBas=%d\nChoix: ",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
 	 //scanf("%1d %1d",&mv,&val);
       refaire:
-      	 //mv=rand()%8;
-
-	 // mv = tab[comp_tab++];
-
+      	 //mv = tab[comp_tab++];
 	 //val = 0;
 	 //printf("mv=%d m_val=%d\n",mv,val);
 
