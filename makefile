@@ -8,16 +8,18 @@ LIBS = -L $(LIBDIR)/lib
 LDFLAGS = -lm -lcgs
 
 # fichiers du projet
-SRC = template.c
+SRC = template.c labData_2D.c A_star.c
 OBJ = $(SRC:.c=.o)
 EXEC = template
 
 
 # règle initiale
-all: $(EXEC)
+all: $(EXEC) $(EXEC2)
 
 # dépendance des .h
-template.o:
+template.o: structure.h labData_2D.h A_star.h
+labData_2D.o: structure.h labData_2D.h
+A_star.o: structure.h A_star.h
 
 # règles de compilation
 %.o: %.c
