@@ -1,6 +1,8 @@
-// Fichier source pour la création, l'affichage et le mise à jour du tableau 2D
 #include "labData_2D.h"
 
+/*-----------------------------------------------------------------------------*/
+/* Fichier source pour la création, l'affichage et le mise à jour du tableau 2D*/
+/*-----------------------------------------------------------------------------*/
 
 /*Fonction qui va initialiser notre tableau en 2D à partir du tableau en 1D renvoyé par getlabyrinth()*/
 char** init_lab(char *labData,t_joueur p1,t_joueur p2,t_joueur tresor,int sizeX, int sizeY)
