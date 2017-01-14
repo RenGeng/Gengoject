@@ -5,27 +5,28 @@
 /*Fonction qui va initialiser notre tableau en 2D à partir du tableau en 1D renvoyé par getlabyrinth()*/
 char** init_lab(char *labData,t_joueur p1,t_joueur p2,t_joueur tresor,int sizeX, int sizeY)
 {
-	//Variables utiles pour les boucles for
+   //Variables utiles pour les boucles for
    int i,j;
 
-	//Initialisation du tableau en 2D
+   //Initialisation du tableau en 2D
    char** tabData; 
    tabData = (char**) malloc(sizeY*sizeof(char*));
    for (i=0;i<sizeY;i++) tabData[i] = (char*) malloc(sizeX*sizeof(char));
 	
-	//On parcourt notre tableau en 2D
+   //On parcourt notre tableau en 2D
    for (i=0;i<sizeY;i++)
    {
       for (j=0;j<sizeX;j++) 
       {
-	      //Si nous arrivons sur une coordonné d'un joueur ou du tresor, on insert le caractère correspondant à sa position
+	 //Si nous arrivons sur une coordonné d'un joueur ou du tresor, on insert le caractère correspondant à sa position
 	 if((i==p1.y && j==p1.x) || (i==p2.y && j==p2.x) || (i==sizeY/2 && j==sizeX/2))
 	 {
 	    if((i==p1.y && j==p1.x)) tabData[i][j]=JOUEUR;
 	    else if((i==p2.y && j==p2.x)) tabData[i][j]=ADVER;
 	    else if((i==tresor.y && j==tresor.x)) tabData[i][j]=TRESOR;
 	 }
-	      //Sinon on ajoute la case correspondante au tableau en 1D
+	 
+	 //Sinon on ajoute la case correspondante au tableau en 1D
 	 else
 	 {	    
 	    tabData[i][j] = labData[i*sizeX+j];
@@ -34,11 +35,13 @@ char** init_lab(char *labData,t_joueur p1,t_joueur p2,t_joueur tresor,int sizeX,
       }
       printf("\n");
    }
+   
    return tabData;
 }
 
 
 /*Fonction qui va nous permettre d'afficher le labyrinth avec des 0 et des 1 pour que l'on puisse comprendre nos différents bug*/
+
 void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,t_joueur tresor,int sizeX,int sizeY)
 {
    //Variables utiles pour les boucles for
@@ -64,6 +67,7 @@ void affichage_2D(char** labData_2D,t_joueur p1,t_joueur p2,t_joueur tresor,int 
 
 
 /*Fonction qui va mettre le tableau en 2D à jour après des déplacements ou rotations*/
+
 void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur* tresor,int sizeX,int sizeY, int player)
 {
    //Variable utile pour les boucles for
@@ -76,7 +80,8 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
    switch(mv)
    {
 
-      /*Bouger une ligne vers la gauche*/	 
+      /*Bouger une ligne vers la gauche*/
+      
       case 0: 
 		  
 	 if (p2->y == val) //Si l'adversaire est sur la ligne
@@ -117,6 +122,7 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
 	 break;   
 	 
       /*Bouger une ligne vers la droite*/
+	 
       case 1: 
 		   
 	 if (p2->y == val) //Si l'adversaire est sur la ligne
@@ -158,6 +164,7 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
 	 break;
 		   
       /*Bouger une colonne vers le haut*/
+	 
       case 2:  
 		   
    	 if (p2->x == val) // Si l'adversaire est sur la colone
@@ -199,6 +206,7 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
 	 break;
 	 
       /*Bouger une colonne vers le bas*/
+	 
       case 3:   
 		   
 	 if (p2->x == val) // Si l'adversaire est sur la colone
@@ -261,6 +269,7 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
    	 break;
 		
       /*Déplacement vers la bas*/
+	 
       case 5: 
 		   
    	 if (player == 1) //Si c'est l'adversaire qui joue
@@ -282,6 +291,7 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
    	 break;
 	
       /*Déplacement vers la gauche*/
+	 
       case 6: 
 		   
    	 if (player == 1) //Si c'est l'adversaire qui joue
@@ -302,7 +312,8 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
 		   
    	 break;
 		   
-      /*Déplacement vers la droite*/		   
+      /*Déplacement vers la droite*/
+	 
       case 7: 
 		   
    	 if (player == 1) //Si c'est l'adversaire qui joue
@@ -323,4 +334,4 @@ void maj_lab(char **labData_2D,int mv,int val,t_joueur* p1,t_joueur* p2,t_joueur
 		   
    	 break;
    } 
-}
+
