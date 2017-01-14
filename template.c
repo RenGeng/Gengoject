@@ -33,13 +33,8 @@ int main()
    /* wait for a game, and retrieve informations about it */
    waitForLabyrinth( "ASTAR timeout=1000", labName, &sizeX, &sizeY);
    labData = (char*) malloc( sizeX * sizeY );
-   player = getLabyrinth(labData);
-   printf("sizeX=%d et sizeY=%d\n",sizeX,sizeY); 
-	
-	
-	
-   printf("\n");
-   //printf("L%d,R%d,U%d,D%d\n",ROTATE_LINE_LEFT,ROTATE_LINE_RIGHT,ROTATE_COLUMN_UP,ROTATE_COLUMN_DOWN);
+   player = getLabyrinth(labData); 	
+  
    int mv,val; //mouvement choisi
    
    if(player==0) 
@@ -50,7 +45,7 @@ int main()
       
       p2.x = sizeX-1;		/* L'adversaire commence à droite */
       p2.y = sizeY/2;
-      p2.energie = 1;		/* L'adversaire commence avec 1 energie */
+      p2.energie = 2;		/* L'adversaire commence avec 1 energie */
    }
    else
    {
@@ -60,199 +55,241 @@ int main()
       
       p1.x = sizeX-1;		/* On commence à droite */
       p1.y = sizeY/2;
-      p1.energie = 1;		/* On commence avec 1 energie */
+      p1.energie = 2;		/* On commence avec 1 energie */
    }
 
+   //Initalisation des positions et de l'énergie du trésor
    tresor.x=sizeX/2;
    tresor.y=sizeY/2;
    tresor.energie=0;
 
+   //Initialisation des symboles pour afficher les joueurs et trésor dans notre tableau avec des 0 et 1 pour débuguer
    p1.symbole='8';
    p2.symbole='7';
    tresor.symbole='T';
 
-   //labData[pos_tresor]='T';
+   //Initialisation du tableau en 2D via le tableau en 1D renvoyé par getlabyrinth()
    labData_2D=init_lab(labData,p1,p2,tresor,sizeX,sizeY);
-   mouvement=A_star(p1,tresor,sizeX,sizeY,labData_2D,player);
-   /*for(i=0;i<100;i++)
-      {	 
-	 printf("\nMouvement:\n%d|",mouvement[i]);
-	 }*/
-   printf("\n");
-     //affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY);
 
-
+   //Récupération des mouvements pour faire le chemin le plus court jusqu'au trésor
+   mouvement=A_star(p1,tresor,sizeX,sizeY,labData_2D,player);  
+  
    do
-   {
-      sleep(0.5); // Pour ralentir l'affichage
-      /* /\* display the labyrinth *\/ */
-      /* printLabyrinth(); */
-      /* affichage_2D(labData_2D,p1,p2,sizeX,sizeY); */
-      /* if(player==0) /\* The opponent plays *\/ */
-      /* { */
-      /* 	 system("clear"); */
-      /* 	 printLabyrinth(); */
-      /* 	 // affichage_manuel(labData,pos_J0,pos_J1,pos_tresor,sizeX,sizeY); */
-      /* 	 printf("\n"); */
-      /* 	 affichage_2D(labData_2D,p1,p2,sizeX,sizeY); */
-      /* 	 printf("sizeX=%d sizeY=%d\np1x:%d p1y:%d\np2x:%d p2y:%d\n",sizeX,sizeY,p1.x,p1.y,p2.x,p2.y); */
-      /* } */
-      //system("clear");
-      printLabyrinth();
-      affichage_2D(labData_2D,p1,p2,tresor,sizeX,sizeY);
+   {      
+      printLabyrinth(); //affichage du labyrinthe
+
+      //Récupération des mouvements de l'adversaire et mise à jour du labyrinthe en fonction de ces derniers
       if (player==1) 
-	  {
+      {
 	 ret = getMove( &move);
 	 mv = move.type;
 	 val = move.value;
 	 maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-	 player=0;
-	 
-	 //playMove( &lab, move);
-	  }
-      else
-      {	 
-	 printf("Mouvement souhaité Rien=%d\nGauche=%d\nDroite=%d\nHaut=%d\nBas=%d\nChoix: ",DO_NOTHING,MOVE_LEFT,MOVE_RIGHT,MOVE_UP,MOVE_DOWN);
-	 //scanf("%1d %1d",&mv,&val);
-      refaire:
-      	 mv = mouvement[ind++];
-	 val = 0;
-	 printf("mv=%d m_val=%d\n",mv,val);
+	 player=0; 
+      }
 
-	 //printf("p1.energie=%d\n",p1.energie);
- 	 //if(p1.energie>=5) mv=rand()%8; //Si on a assez d'energie on change une colonne ou une ligne
- 	 //else mv=rand()%4+4; //Sinon non on bouge seulement
- 	 //val = 0;
- 	 //printf("mv=%d m_val=%d\n",mv,val);
+      //C'est à nous de jouer
+      else
+      {	 	  
+      refaire:
+
+	 //On parcourt la liste mouvement des mouvements à faire pour aller au trésor le plus vite possible
+      	 mv = mouvement[ind++];
+	 //On ne bouge pas de ligne ou colonne
+	 val = 0;
+	 
 	 switch(mv)
 	 {
-	    case 0: //Bouger ligne à gauche
-	       //goto refaire;
-	       //val=rand()%sizeY; //Choisi une ligne aléatoire
- 	       p1.energie=p1.energie-5;
-	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-	       break;
-	    case 1: //Bouger ligne à droite
-	       //goto refaire;
-	       //val=rand()%sizeY; //Choisi une ligne aléatoire
- 	       p1.energie=p1.energie-5;
-	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-	       break;
-	    case 2: //Bouger colone en haut
-	       //goto refaire;
-	       //val=rand()%sizeX; //Choisi une colonne aléatoire
- 	       p1.energie=p1.energie-5;
-	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-	       break;
-	    case 3: //Bouger colone en bas
-	       //goto refaire;
-	       //val=rand()%sizeX; //Choisi une colonne aléatoire
- 	       p1.energie=p1.energie-5;
-	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-	       break;
+	    /*Bouger ligne à gauche*/
+	    
+	    case 0: 
 
-	    /* Déplacement en haut */
-	    case 4:	       
+	       //On perd 5 d'énergie
+ 	       p1.energie=p1.energie-5;
+	       //On met à jour le labyrinthe
+	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
+	       break;
+	       
+
+	    /*Bouger ligne à droite */
+	       
+	    case 1:
+
+	       //On perd 5 d'énergie
+ 	       p1.energie=p1.energie-5;
+	       //On met à jour le labyrinthe
+	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
+	       break;
+	       
+
+	    /*Bouger colone en haut*/
+	       
+	    case 2: 
+
+	       //On perd 5 d'énergie
+ 	       p1.energie=p1.energie-5;
+	       //On met à jour le labyrinthe
+	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
+	       break;
+	       
+	       
+	    /*Bouger colone en bas*/
+	       
+	    case 3:
+	       
+	       //On perd 5 d'énergie
+	       p1.energie=p1.energie-5;
+	       //On met à jour le labyrinthe
+	       maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
+	       break;
+	       
+
+	    /*Déplacement en haut*/
+	       
+	    case 4:
+	       
 	       if(p1.y==0) //Si le joueur est tout en haut et veut aller en haut
 	       {
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[sizeY-1][p1.x]!=1 && (int)labData_2D[sizeY-1][p1.x]!=64) /* 64 en ASCII est @ */
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }		     
+		  }
+
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
 		  else goto refaire;
 	       }
+	       
 	       else //Si le joueur est autre-part que tout en haut et veut aller en haut	       
 	       {
-		  
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[p1.y-1][p1.x]!=1 && (int)labData_2D[p1.y-1][p1.x]!=64) 
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }	
-		  else goto refaire;
-	       }	       
-	       break;
+		  }
 
-	    /* Déplacement en bas */
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
+		  else goto refaire;
+	       }
+	       
+	       break;
+	       
+
+	    /*Déplacement en bas*/
+	       
 	    case 5: 		
 	       
 	       if(p1.y == sizeY-1) //Si le joueur est tout en bas et veut aller en bas
-	       {		  
+	       {
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[0][p1.x]!=1 && (int)labData_2D[0][p1.x]!=64)
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }	
+		  }
+
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
 		  else goto refaire;
-	       } 		       
+	       }
+	       
 	       else //Si le joueur est autre-part que tout en bas et veut aller en bas
-	       {		  
+	       {
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[p1.y+1][p1.x]!=1 && (int)labData_2D[p1.y+1][p1.x]!=64)
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }	
+		  }
+
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
 		  else goto refaire;
 	       }
+	       
 	       break;
 
-	    /* Déplacement à gauche */
-	    case 6: 	
+	       
+	    /*Déplacement à gauche*/
+	       
+	    case 6:
+	       
 	       if(p1.x==0) //Si le joueur est tout à gauche et veut aller à gauche
-	       {		  
+	       {
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[p1.y][sizeX-1]!=1 && (int)labData_2D[p1.y][sizeX-1]!=64)
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }	
+		  }
+
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
 		  else goto refaire;
 	       }
+	       
 	       else //Si le joueur est autre-part que tout à gauche et veut aller à gauche
-	       {		  
+	       {
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[p1.y][p1.x-1]!=1 && (int)labData_2D[p1.y][p1.x-1]!=64)
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }	
+		  }
+
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
+
 		  else goto refaire;
 	       }			  
 	       break;
+	       
 
-	    /* Déplacement à droite */
-	    case 7: 		
+	    /*Déplacement à droite*/
+	       
+	    case 7:
+	       
 	       if(p1.x == sizeX-1) //Si le joueur est tout à droite et veut aller à droite
-	       {		  
+	       {
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[p1.y][0]!=1 && (int)labData_2D[p1.y][0]!=64)
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }	
+		  }
+
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
 		  else goto refaire;
 	       }
+	       
 	       else //Si le joueur est autre-part que tout à droite et veut aller à droite
-	       {		  
+	       {
+		  //Si la case où on veut aller n'est pas un mur ou l'autre joueur
 		  if((int)labData_2D[p1.y][p1.x+1]!=1 && (int)labData_2D[p1.y][p1.x+1]!=64)
 		  {
 		     maj_lab(labData_2D,mv,val,&p1,&p2,&tresor,sizeX,sizeY,player);
-		  }	
+		  }
+
+		  //Sinon on recommence (c'est pour les mouvements aléatoire que l'on vérifie cela)
 		  else goto refaire;
-	       }			  
+	       }
+	       
 	       break;		       
 	 }
-	 if(mv>3) p1.energie+=1; //Si gagne de l'énergie que si l'on a bougé
+
+	 //Si on a bougé et non pas modifier une ligne ou colonne alors on gagne un d'énergie
+	 if(mv>3) p1.energie+=1;
+
+	 //C'est à l'autre de jouer
 	 player = 1;
+
+	 //On envoie nos mouvements
 	 move.type=mv;
 	 move.value=val;
 	 val = 0;
-	 ret = sendMove(move); //printf("pos_J0=%d\n",pos_J0);
+	 ret = sendMove(move); 
       }
-      //printLabyrinth();	
-
+      
    
-   }
+   }   
    while((player ==1 && ret != MOVE_WIN) || (player==0 && ret != MOVE_LOSE));
-	           
+
    if((player ==1 && ret != MOVE_WIN) || (player==0 && ret != MOVE_LOSE)) printf("Perdu !");
    else printf("Gagné !\n");
 	
    /* we do not forget to free theallocated array */
-   free(labData);
-
-   
+   free(labData);   
 	
    /* end the connection, because we are polite */
    closeConnection();
