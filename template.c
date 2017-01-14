@@ -404,39 +404,55 @@ int dedans(t_case *Liste,t_case v,int sizeX,int sizeY) //vérifie que v est dans
    return 0; //pas dedans
 }
 
-t_case voisin(t_case c,int choix,int sizeX,int sizeY,char **labData_2D,t_joueur tresor,t_joueur p2)
+t_case voisin(t_case c,int choix,int sizeX,int sizeY,char **labData_2D,t_joueur tresor,int player)
 {
    t_case v;
-   if(choix==0) //voisin haut
-   {
-      if(c.y==0) v.y=sizeY-1; //Sur la premiere ligne
-      else v.y=c.y-1; //N'importe où 
-      v.x=c.x;  
+   if (player == 0){ // Quand on est à gauche
+      if(choix==0) //voisin haut
+      {
+	 if(c.y==0) v.y=sizeY-1; //Sur la premiere ligne
+	 else v.y=c.y-1; //N'importe où 
+	 v.x=c.x;  
+      }
+      else if(choix==1) //voisin droite
+      {
+	 if(c.x==sizeX-1) v.x=0; //Sur la derniere colone
+	 else v.x=c.x+1; //N'importe où 
+	 v.y=c.y;  
+      }
+      else if(choix==2) //voisin bas
+      {
+	 if(c.y==sizeY-1) v.y=0; //Sur la derniere ligne
+	 else v.y=c.y+1; //N'importe où 
+	 v.x=c.x;  
+      }
    }
-   else if(choix==1) //voisin droite
-   {
-      if(c.x==sizeX-1) v.x=0; //Sur la derniere colone
-      else v.x=c.x+1; //N'importe où 
-      v.y=c.y;  
-   }
-   else if(choix==2) //voisin bas
-   {
-      if(c.y==sizeY-1) v.y=0; //Sur la derniere ligne
-      else v.y=c.y+1; //N'importe où 
-      v.x=c.x;  
-   }
-   else if(choix==3) //voisin gauche
-   {
-      if(c.x==0) v.x=sizeX-1; //Sur la premiere colone
-      else v.x=c.x-1; //N'importe où 
-      v.y=c.y;  
+   else { // Quand on est à droite
+      if(choix==0) //voisin haut
+      {
+	 if(c.y==0) v.y=sizeY-1; //Sur la premiere ligne
+	 else v.y=c.y-1; //N'importe où 
+	 v.x=c.x;  
+      }
+      else if(choix==1) //voisin bas
+      {
+	 if(c.y==sizeY-1) v.y=0; //Sur la derniere ligne
+	 else v.y=c.y+1; //N'importe où 
+	 v.x=c.x;  
+      }
+      else if(choix==2) //voisin gauche
+      {
+	 if(c.x==0) v.x=sizeX-1; //Sur la premiere colone
+	 else v.x=c.x-1; //N'importe où 
+	 v.y=c.y;  
+      }
    }
    v.cost=c.cost+1;
-   v.heuristique=v.cost+abs(tresor.x-v.x)+abs(tresor.y-v.y);   
+   v.heuristique=v.cost+abs(tresor.x-v.x)+abs(tresor.y-v.y);
    v.xp=c.x;
    v.yp=c.y;
    v.explor=0;
-   if((int)labData_2D[v.y][v.x]==1 || (v.y==p2.y && v.x==p2.x)) 
+   if((int)labData_2D[v.y][v.x]==1)
       {
 	 v.cost=1000;
       }
@@ -455,151 +471,97 @@ t_case recherche(t_case *Liste,int sizeX,int sizeY,t_case c)
    return precedent;
 }
 
-void affiche_case(t_case v)
+int *A_star(t_joueur p1,t_joueur tresor,int sizeX,int sizeY,char **labData_2D,int player)
 {
-   printf("x=%d,y=%d,cost=%d,heuri=%d,xp=%d,yp=%d,explor=%d\n",v.x,v.y,v.cost,v.heuristique,v.xp,v.yp,v.explor);
-}
-
-void affiche_liste(t_case *liste)
-{
-   int i=0;
-   while(liste[i].x!=0 || liste[i].y!=0 || liste[i].cost!=0)
-   {
-      affiche_case(liste[i]);
-      i+=1;
-   }
-}
-
-int *A_star(t_joueur p1,t_joueur p2,t_joueur tresor,int sizeX,int sizeY,char **labData_2D)
-{
-   t_case *Liste=(t_case *)calloc(sizeX*sizeY,sizeof(t_case)); //lise des cases
+   t_case *Liste=(t_case *)malloc(sizeX*sizeY*sizeof(t_case)); //lise des cases
    t_case c={.x=p1.x,.y=p1.y,.cost=0,.heuristique=1000,.xp=-1,.yp=-1,.explor=0}; //premier élément (joueur)
-   int i,B=0,ind=1,ind_c=0,ind_plus_petit=0; //ind_c est l'indice de c dans la liste
-   int cpt_nb_voisin_ajoute=0; //permet de compter combien de voisin ont été ajouté à la liste
+   int i,ind=1,ind_c=0,ind_plus_petit; //ind_c est l'indice de c dans la liste
    t_case v; //voisin   
    int *tab_temp=(int *)calloc(sizeX*sizeY,sizeof(int));
-   Liste[ind_c]=c; 
-   printf("\n%d",ind_c);
+   Liste[ind_c]=c;
+   for(i=1;i<sizeX*sizeY;i++) Liste[i].cost = 1000;
    while(c.x!=tresor.x || c.y!=tresor.y) //tant qu'on est pas arrivé au tresor on continue
       {
-	 printf("c.x=%d,c.y=%d\n",c.x,c.y);
-	 //printf("Voilà c:");
-	 //affiche_case(c);
-	 //B+=1;
-	 //printf("\nind_=%d\n",ind_c);
-	 for(i=0;i<4;i++)
+	 // printf("\n%d",ind_c);
+        printf("Avant les for:c.x=%d, c.y=%d, c.cost=%d, c.heuristique=%d \n", c.x,c.y,c.cost,c.heuristique);
+	 for(i=0;i<3;i++)
 	 {
-	    v=voisin(c,i,sizeX,sizeY,labData_2D,tresor,p2);
-	    //affiche_case(v);	    
-	    //printf("i=%d\n",i);
-	    if(v.cost<1000 && dedans(Liste,v,sizeX,sizeY)==0) //Si ce n'est pas un mur et pas dans la liste
+	   
+	    v=voisin(c,i,sizeX,sizeY,labData_2D,tresor,player);
+	    if(v.cost<100 && dedans(Liste,v,sizeX,sizeY)==0) //Si ce n'est pas un mur et pas dans la liste
 	    {
 	       Liste[ind]=v; //On ajoute v à la liste
+	       printf("entre1\n");
 	       ind+=1;
-	       cpt_nb_voisin_ajoute+=1;
 	    }       
 	 }
-	 
-	 //printf("cpt_voisin=%d\n",cpt_nb_voisin_ajoute);
-	 //affiche_liste(Liste);
-	 if(cpt_nb_voisin_ajoute>0)
+	 printf("Avant la 2eme for:c.x=%d, c.y=%d, c.cost=%d, c.heuristique=%d \n", c.x,c.y,c.cost,c.heuristique);
+	 for(i=0;i<ind;i++) //On prend l'élément le plus proche du tresor inexploré
 	 {
-	    int compteur_plus_petit=Liste[ind-1-cpt_nb_voisin_ajoute+1].heuristique; //Permet de comparer sans changer la valeur de c pendant la comparaison
-	    for(i=1;i<cpt_nb_voisin_ajoute+1;i++) //On prend l'élément le plus proche du tresor inexploré parmis les voisin que l'on vient de calculer
+	    if(((c.cost+c.heuristique)>=(Liste[i].cost+Liste[i].heuristique) && Liste[i].explor==0) || ((Liste[i].cost+Liste[i].heuristique)> (c.cost+c.heuristique) && Liste[i].explor==0)) // On ajoute les || car les autres cases ont un cost et un heuristique plus grand que c
 	    {
-	       if(compteur_plus_petit>=Liste[ind-1-cpt_nb_voisin_ajoute+i].heuristique && Liste[ind-1-cpt_nb_voisin_ajoute+i].explor==0) 
-	       {
-		  ind_plus_petit=ind-1-cpt_nb_voisin_ajoute+i;
-		  compteur_plus_petit=Liste[ind-1-cpt_nb_voisin_ajoute+i].heuristique;
-		  //printf("Ind=%d,i=%d,ind_plus_petit=%d\n",ind,i,ind_plus_petit);
-	       }	
-	    }
-	    Liste[ind_c].explor=1;
-	    c=Liste[ind_plus_petit];
-	    ind_c=ind_plus_petit;
-	    cpt_nb_voisin_ajoute=0;
+	       ind_plus_petit=i;
+	       printf("entre2\n");
+	       break;
+	    }	
 	 }
+	 printf("ind = %d et indice_petit = %d\n", ind,ind_plus_petit);
+	  Liste[ind_c].explor=1;
+	  printf("Avant l'affectation: c.x=%d, c.y=%d, c.cost=%d, c.heuristique=%d \n", c.x,c.y,c.cost,c.heuristique);
+	  c=Liste[ind_plus_petit];
+	  printf("Après l'affectation: c.x = %d, c.y = %d,c.cost=%d, c.heuristique=%d \n", c.x,c.y,c.cost,c.heuristique);
+	  //sleep(2);
+	  ind_c=ind_plus_petit; 	  
       }
-   //printf("\n\n\nINDICE=%d",ind);
-   int cpt=0,nb_good_case=0; //cpt pour initialiser le tableau avec le chemin à suivre
-   for(i=0;i<ind;i++) if(Liste[i].explor==1) {nb_good_case+=1;affiche_case(Liste[i]);}
-   affiche_case(Liste[ind-1]);
-   //printf("nb_good_case+1:%d\n",nb_good_case);
-   t_case *Good_case=(t_case *)calloc(nb_good_case+2,sizeof(t_case)); //tableau avec les bonnes cases à suivre
-   int *A_star=(int *)calloc(nb_good_case+2,sizeof(int)); //tableau des déplacements à suivre
-   for(i=0;i<ind;i++)
-   {
-      if(Liste[i].explor==1)
-      {
-	 Good_case[cpt]=Liste[i];
-	 cpt+=1;
-      }
-   }
-   Good_case[cpt]=Liste[ind-1];
-   printf("\n");
-   affiche_case(Good_case[cpt]);
-   affiche_case(Good_case[cpt-1]);
-   printf("tresor.x=%d tresor.y=%d\n",tresor.x,tresor.y);
-   for(i=0;i<cpt+1;i++)
-   {
-      if(Good_case[i].x==Good_case[i+1].x)
-      {
-	 if(Good_case[i].y-Good_case[i+1].y>0) A_star[i]=MOVE_UP;
-	 else if(Good_case[i].y-Good_case[i+1].y<0) A_star[i]=MOVE_DOWN;
-      }
-      else if(Good_case[i].y==Good_case[i+1].y)
-      {
-	 if(Good_case[i].x-Good_case[i+1].x>0) A_star[i]=MOVE_LEFT;
-	 else if(Good_case[i].x-Good_case[i+1].x<0) A_star[i]=MOVE_RIGHT;
-      }
-      //printf("%d|",A_star[i]);
-   }
-   
-   //printf("\n");
-   /*if(Good_case[cpt-1].x==Good_case[nb_good_case+1].x)
-   {
-      if(Good_case[cpt-1].y-Good_case[nb_good_case+1].y>0) A_star[cpt-1]=MOVE_UP;
-      else if(Good_case[cpt-1].y-Good_case[nb_good_case+1].y<0) A_star[cpt-1]=MOVE_DOWN;
-   }
-   else if(Good_case[cpt-1].y==Good_case[nb_good_case+1].y)
-   {
-      if(Good_case[cpt-1].x-Good_case[nb_good_case+1].x>0) A_star[cpt-1]=MOVE_LEFT;
-      else if(Good_case[cpt-1].x-Good_case[nb_good_case+1].x<0) A_star[cpt-1]=MOVE_RIGHT;
-   }*/
-   for(i=0;i<nb_good_case+2;i++) printf("%d|",A_star[i]);
-   printf("\n");
-	 
-   /*while(c.x!=p1.x && c.y!=p1.y)
+   printf("A la sortie du 1er while: c.x = %d, c.y = %d,c.cost=%d, c.heuristique=%d, c.xp=%d, c.yp=%d \n", c.x,c.y,c.cost,c.heuristique,c.xp,c.yp);
+   printf("\n sizeX=%d et sizeY=%d",sizeX,sizeY);
+   ind = 0;
+   while(c.x!=p1.x || c.y!=p1.y)
    { 
+      printf("\nentrée dans le 2eme while\n");
+      
       if(c.x-c.xp==0 && c.y-c.yp==1)
       {
+	 printf("1er if!!\n");
 	 tab_temp[ind]=MOVE_DOWN;
 	 c=recherche(Liste,sizeX,sizeY,c);
       }
       else if (c.x-c.xp==0 && c.y-c.yp==-1) 
       {
+	 printf("2er if!!\n");
 	 tab_temp[ind]=MOVE_UP;
 	 c=recherche(Liste,sizeX,sizeY,c);
       }
       else if (c.x-c.xp==1 && c.y-c.yp==0) 
       {
+	 printf("3er if!!\n");
 	 tab_temp[ind]=MOVE_RIGHT;
 	 c=recherche(Liste,sizeX,sizeY,c);
       }
       else if (c.x-c.xp==-1 && c.y-c.yp==0) 
       {
+	 printf("4er if!!\n");
 	 tab_temp[ind]=MOVE_LEFT;
 	 c=recherche(Liste,sizeX,sizeY,c);
       }
+      //int taper;
+      //attendre:
+      //if(scanf("%d",&taper)){
+      //printLabyrinth();
+      printf("le joueur est à:%d %d et le tresor à : %d %d\n",p1.x,p1.y,tresor.x,tresor.y);
+      printf("Avant l'affectation: c.x = %d, c.y = %d, c.xp=%d, c.yp=%d \n", c.x,c.y,c.xp,c.yp);
+      printf("\n sizeX=%d et sizeY=%d",sizeX,sizeY);
+      //}
+      //else goto attendre;
       ind+=1;
-      }  
+   }  
    
    int *A_star=(int *)calloc(ind,sizeof(int));
    for(i=0;i<ind;i++)
       {
 	 A_star[ind-i-1]=tab_temp[i];
 	 printf("\n%d|",tab_temp[i]);
-	 }*/
+      }
    
    return A_star;
 }
@@ -616,10 +578,10 @@ int main()
    int sizeX,sizeY;
    t_joueur p1,p2,tresor;
    int* mouvement;
-   int ind=0,i;
+   int ind=0;
 
    /* connection to the server */
-   connectToServer( "pc4023.polytech.upmc.fr", 1234, "Gengo_Lance");
+   connectToServer( "pc4023.polytech.upmc.fr", 1234, "Gengo");
 	
 	
    /* wait for a game, and retrieve informations about it */
@@ -665,9 +627,7 @@ int main()
 
    //labData[pos_tresor]='T';
    labData_2D=init_lab(labData,p1,p2,tresor,sizeX,sizeY);
-   printLabyrinth();
-   affichage_2D(labData_2D,p1,p2,tresor,sizeX,sizeY);
-   mouvement=A_star(p1,p2,tresor,sizeX,sizeY,labData_2D);
+   mouvement=A_star(p1,tresor,sizeX,sizeY,labData_2D,player);
    /*for(i=0;i<100;i++)
       {	 
 	 printf("\nMouvement:\n%d|",mouvement[i]);
