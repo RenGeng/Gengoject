@@ -1,5 +1,5 @@
 // Fichier source pour la création, l'affichage et le mise à jour du tableau 2D
-
+//gengolololool
 #include "labData_2D.h"
 
 char** init_lab(char *labData,t_joueur p1,t_joueur p2,t_joueur tresor,int sizeX, int sizeY)
